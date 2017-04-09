@@ -23,16 +23,16 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
         $login_ok = false;
-        $row = $stmt->fetch();
-        if($row){
-            $check_password = hash('sha256', $_POST['password'] . $row['salt']);
+        $user_row = $stmt->fetch();
+        if($user_row){
+            $check_password = hash('sha256', $_POST['password'] . $user_row['salt']);
             for($round = 0; $round < 65536; $round++){
-                $check_password = hash('sha256', $check_password . $row['salt']);
+                $check_password = hash('sha256', $check_password . $user_row['salt']);
             }
-            if($check_password === $row['password']){
+            if($check_password === $user_row['password']){
                 $login_ok = true;
             }
-            $check_ssn = $row['Officer_SSN'];
+            $check_ssn = $user_row['Officer_SSN'];
         }
 
         $query = "
@@ -57,17 +57,17 @@
         }
 
         if($login_ok){
-            unset($row['salt']);
-            unset($row['password']);
-            $_SESSION['user'] = $row;
+            unset($user_row['salt']);
+            unset($user_row['password']);
+            $_SESSION['user'] = $user_row;
             if($is_super)
             {
-              header("Location: ../pages/super_home.html");
-              die("Redirecting to: ../pages/super_home.html");
+              header("Location: ../pages/super_home.php");
+              die("Redirecting to: ../pages/super_home.php");
             }
             else {
-              header("Location: ../pages/home.html");
-              die("Redirecting to: ../pages/home.html");
+              header("Location: ../pages/home.php");
+              die("Redirecting to: ../pages/home.php");
             }
 
         }
