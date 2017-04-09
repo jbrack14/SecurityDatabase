@@ -26,8 +26,8 @@
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
         $row = $stmt->fetch();
         if($row){ die("This username is already in use"); }
-
-		//Fill email
+        
+    //Fill email
         $query = "
             SELECT
                 Email
@@ -53,13 +53,15 @@
                 password,
                 salt,
                 email,
-				        Officer_SSN
+				        Officer_SSN,
+                is_super
             ) VALUES (
                 :username,
                 :password,
                 :salt,
                 :email,
-				        :ssn
+				        :ssn,
+                :is_super
             )
         ";
 
@@ -72,7 +74,8 @@
             ':password' => $password,
             ':salt' => $salt,
             ':email' => $email,
-            ':ssn'=> $_POST['ssn']
+            ':ssn'=> $_POST['ssn'],
+
         );
         try {
             $stmt = $db->prepare($query);
