@@ -13,6 +13,12 @@
     <script type="text/javascript" src="../vendor/jquery/jquery.min.js"></script>
     <script src="../js/login.js"></script>
 
+    <!-- Bootstrap Validator-->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css"/>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/js/bootstrapValidator.min.js"> </script>
+
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -53,7 +59,7 @@
         <div class="panel-body">
           <div class="row">
             <div class="col-lg-12">
-              <form id="login-form" action="../php/login.php" method="post" role="form" style="display: block;">
+              <form id="login-form" action="../php/login.php" data-toggle="validator" method="post" role="form" style="display: block;">
                 <div class="form-group">
                   <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
                 </div>
@@ -67,28 +73,22 @@
                     </div>
                   </div>
                 </div>
-                <div class="form-group">
-                  <div class="row">
-                    <div class="col-lg-12">
-                      <div class="text-center">
-                        <a href="http://phpoll.com/recover" tabindex="5" class="forgot-password">Forgot Password?</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </form>
-              <form id="register-form" action="../php/register.php" method="post" role="form" style="display: none;">
+              <form id="register-form" action="../php/register.php" method="post" role="form" data-toggle="validator" style="display: none;">
                 <div class="form-group">
-                  <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                  <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="" required>
                 </div>
                 <div class="form-group">
-                  <input type="number" size="9" name="ssn" id="ssn" tabindex="1" class="form-control" placeholder="Social Security Number" value="">
+                  <input type="number" size="9" data-minlength="9" data-minlength-error="Invalid Social Security Number" name="ssn" id="ssn" tabindex="1" class="form-control" placeholder="Social Security Number" value="" required>
+                  <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group">
-                  <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                  <input type="password" data-minlength="6" name="inputPassword" id="inputPassword" tabindex="2" class="form-control" placeholder="Password" required>
+                  <div class="help-block">Minimum of 6 characters</div>
                 </div>
                 <div class="form-group">
-                  <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                  <input type="password" name="confirm-password" id="confirm-password" data-match="#inputPassword" data-match-error="Passwords don't match." tabindex="2" class="form-control" placeholder="Confirm Password" required>
+                  <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group">
                   <div class="row">
@@ -111,6 +111,9 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap Validator JavaScript -->
+    <script src="../node_modules/bootstrap-validator/dist/validator.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>

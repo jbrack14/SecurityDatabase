@@ -5,7 +5,7 @@
         // Ensure that the user fills out fields
         if(empty($_POST['username']))
         { die("Please enter a username."); }
-        if(empty($_POST['password']))
+        if(empty($_POST['inputPassword']))
         { die("Please enter a password."); }
 		    if(empty($_POST['ssn']))
 		    { die("Please enter your social security number."); }
@@ -26,7 +26,7 @@
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
         $row = $stmt->fetch();
         if($row){ die("This username is already in use"); }
-        
+
     //Fill email
         $query = "
             SELECT
@@ -67,7 +67,7 @@
 
         // Security measures
         $salt = dechex(mt_rand(0, 2147483647)) . dechex(mt_rand(0, 2147483647));
-        $password = hash('sha256', $_POST['password'] . $salt);
+        $password = hash('sha256', $_POST['inputPassword'] . $salt);
         for($round = 0; $round < 65536; $round++){ $password = hash('sha256', $password . $salt); }
         $query_params = array(
             ':username' => $_POST['username'],
