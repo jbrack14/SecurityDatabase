@@ -103,12 +103,12 @@
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
         if($is_super == true)
         {
-          header("Location: super_home.php");
-          die("Redirecting to super_home.php");
+          header("Location: ../pages/super_home.php");
+          die("Redirecting to ../pages/super_home.php");
         }
         else {
-          header("Location: home.php");
-          die("Redirecting to home.php");
+          header("Location: ../pages/home.php");
+          die("Redirecting to ../pages/home.php");
         }
     }
 ?>
