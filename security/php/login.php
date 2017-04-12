@@ -7,7 +7,6 @@
                 username,
                 password,
                 salt,
-                email,
                 Officer_SSN
             FROM users
             WHERE
@@ -38,9 +37,13 @@
         $query = "
             SELECT
                 1
-            FROM Supervisor
+            FROM Security_Officer
             WHERE
-                ssn = :ssn
+                :ssn IN (
+                  SELECT
+                      Super_SSN
+                  FROM Security_Officer
+                  )
         ";
         $query_params = array(
             ':ssn' => $check_ssn

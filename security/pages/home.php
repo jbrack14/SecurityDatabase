@@ -12,7 +12,7 @@
             *
         FROM Alarm_Event
         WHERE
-        Is_Resolved = false
+        Resolved_Time = null
     ";
 
     try{
