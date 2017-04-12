@@ -52,6 +52,7 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
         $row = $stmt->fetch();
+        $is_super = false;
         if($row){
           $is_super = true;
         }

@@ -46,22 +46,42 @@
         $row = $stmt->fetch();
         if($row){ $email = $row; }
 
-        // Add row to database
+    //Check if they are a supervisor
+        $query = "
+            SELECT
+                1
+            FROM Supervisor
+            WHERE
+                ssn = :ssn
+        ";
+
+        $query_params = array(
+          ':ssn' => $_POST['ssn']
+        );
+        try {
+            $stmt = $db->prepare($query);
+            $result = $stmt->execute($query_params);
+        }
+        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage());}
+        $row = $stmt->fetch();
+        $is_super = false;
+        if($row){ $is_super = true; }
+
+
+    // Add row to database
         $query = "
             INSERT INTO users (
                 username,
                 password,
                 salt,
                 email,
-				        Officer_SSN,
-                is_super
+				        Officer_SSN
             ) VALUES (
                 :username,
                 :password,
                 :salt,
                 :email,
-				        :ssn,
-                :is_super
+				        :ssn
             )
         ";
 
@@ -74,15 +94,21 @@
             ':password' => $password,
             ':salt' => $salt,
             ':email' => $email,
-            ':ssn'=> $_POST['ssn'],
-
+            ':ssn'=> $_POST['ssn']
         );
         try {
             $stmt = $db->prepare($query);
             $result = $stmt->execute($query_params);
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-        header("Location: super_home.html");
-        die("Redirecting to super_home.html");
+        if($is_super == true)
+        {
+          header("Location: super_home.php");
+          die("Redirecting to super_home.php");
+        }
+        else {
+          header("Location: home.php");
+          die("Redirecting to home.php");
+        }
     }
 ?>

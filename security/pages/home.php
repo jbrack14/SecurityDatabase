@@ -21,6 +21,7 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_alarms = $stmt->rowCount();
+
 ?>
 
 <!DOCTYPE html>
