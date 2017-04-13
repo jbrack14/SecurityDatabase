@@ -164,36 +164,6 @@
                             <!-- /.nav-second-level -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Third Level <span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
                             <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -241,15 +211,15 @@
                             <tbody>
                               <?php while($row = $unresolved->fetch()) { ?>
                                 <tr class="danger">
-                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
+                                  <td><?php echo $row['Alarm_Event_UUID']; $_SESSION['alarm_uuid'] = $row['Alarm_Event_UUID'];?></td>
                                   <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Duration']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
-                                  <td><form id="register-form" action="../php/resolve.php" method="post" role="form" data-toggle="validator" style="display: none;">
+                                  <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
-                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Resolve">
+                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-success" value="Resolve">
                                     </div></td>
                                 </tr>
                                 <?php } ?>
