@@ -6,24 +6,41 @@
         die("Redirecting to ../index.html");
     }
 
+    //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            *
-        FROM Security_Officer
+            Alarm_Event_UUID, Start_Time, End_Time, Duration, Spot_ID, Coverage_Description
+        FROM Alarm_Event NATURAL JOIN Spot
         WHERE
-            SSN = :ssn
+        Resolved_Time = null
+        ORDER BY Start_Time
     ";
-    $query_params = array(
-        ':ssn' => $_SESSION['user']['Officer_SSN']
-    );
 
     try{
-        $stmt = $db->prepare($query);
-        $result = $stmt->execute($query_params);
+        $unresolved = $db->prepare($query);
+        $result = $unresolved->execute();
+        $unresolved->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_unresolved_alarms = $unresolved->rowCount();
 
-    $profile = $stmt->fetch();
+    //Get Unresolved Alarm Alerts
+    $query = "
+        SELECT
+            Alarm_Event_UUID, Start_Time, End_Time, Duration, Spot_ID, Coverage_Description
+        FROM Alarm_Event NATURAL JOIN Spot
+        WHERE
+        NOT Resolved_Time = null
+        ORDER BY Start_Time
+    ";
+
+    try{
+        $resolved = $db->prepare($query);
+        $result = $resolved->execute();
+        $resolved->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_resolved_alarms = $resolved->rowCount();
 ?>
 
 <!DOCTYPE html>
@@ -37,7 +54,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin 2 - Bootstrap Admin Theme</title>
+    <title>Alarm System</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -73,7 +90,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Securit Officer Terminal</a>
+                <a class="navbar-brand" href="home.php">Security Officer Terminal</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -84,7 +101,7 @@
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="super_user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <li><a href="user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
                         </li>
                         <li class="divider"></li>
                         <li><a href="../php/logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
@@ -111,16 +128,16 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="super_home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
-                            <a href="super_user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
-                        </li>
-                        <li>
-                            <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
+                            <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
                         </li>
                         <li>
                             <a href="alarms.php"><i class="fa fa-exclamation-triangle fa-fw"></i> Alarms</a>
+                        </li>
+                        <li>
+                            <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
@@ -198,67 +215,82 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">User Profile</h1>
+                    <h1 class="page-header">Alarms</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-default">
+                    <div class="panel panel-danger">
                         <div class="panel-heading">
-                            Welcome <?php echo $_SESSION['user']['username'] ?>
+                            There are currently <b><?php echo $num_unresolved_alarms?></b> unresolved alarms.
                         </div>
-                        <br>
-                        <div>
-                            <form class="form-horizontal" action="../php/updateSuperUser.php" method="post" role="form">
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">First name:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="first" id="first"type="text" value="<?php echo $profile['First_Name'] ?>">
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">Last name:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="last" id="last" type="text" value="<?php echo $profile['Last_Name'] ?>">
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">Phone number:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="phone" id="phone" type="text" value="<?php echo $profile['Phone_Number'] ?>">
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">Email:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="email" id="email" type="text" value="<?php echo $profile['Email'] ?>">
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">Address:</label>
-                                  <div class="col-lg-8">
-                                    <input class="form-control" name="address" id="address" type="text" value="<?php echo $profile['Address'] ?>">
-                                  </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-md-2 control-label">Username:</label>
-                                <div class="col-md-8">
-                                  <input class="form-control" type="text" value="<?php echo $_SESSION['user']['username'] ?>" disabled>
-                                </div>
-                              </div>
-                              <div class="form-group">
-                                <label class="col-md-2 control-label"></label>
-                                <div class="col-md-8">
-                                  <input type="submit" class="btn btn-primary" value="Save Changes">
-                                </div>
-                              </div>
-                            </form>
-                          </div>
+                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <thead>
+                                <tr class="danger">
+                                    <th>Alarm ID</th>
+                                    <th>Spot ID</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Duration</th>
+                                    <th>Spot Description</th>
+                                    <th> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <?php while($row = $unresolved->fetch()) { ?>
+                                <tr class="danger">
+                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
+                                  <td><?php echo $row['Spot_ID']; ?></td>
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo $row['Duration']; ?></td>
+                                  <td><?php echo $row['Coverage_Description']; ?></td>
+                                  <td><form id="register-form" action="../php/resolve.php" method="post" role="form" data-toggle="validator" style="display: none;">
+                                    <div class="form-group">
+                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Resolve">
+                                    </div></td>
+                                </tr>
+                                <?php } ?>
+                            <tbody>
+                          </table>
                     </div>
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            There are currently <b><?php echo $num_resolved_alarms?></b> resolved alarms.
+                        </div>
+                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <thead>
+                                <tr class="success">
+                                    <th>Alarm ID</th>
+                                    <th>Spot ID</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Duration</th>
+                                    <th>Resolved Time</th>
+                                    <th>Spot Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <?php while($row = $resolved->fetch()) { ?>
+                                <tr class="success">
+                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
+                                  <td><?php echo $row['Spot_ID']; ?></td>
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo $row['Duration']; ?></td>
+                                  <td><?php echo $row['Resolved_Time']; ?></td>
+                                  <td><?php echo $row['Coverage_Description']; ?></td>
+                                </tr>
+                                <?php } ?>
+                            <tbody>
+                          </table>
+                    </div>
+
                     <hr>
-                    </div>
+                  </div>
                     <!-- /.panel -->
                 </div>
                 <!-- /.col-lg-12 -->

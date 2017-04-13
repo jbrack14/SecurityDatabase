@@ -70,7 +70,7 @@
 
     // Add row to database
         $query = "
-            INSERT INTO users (
+            INSERT INTO User_Accounts (
                 username,
                 password,
                 salt,
