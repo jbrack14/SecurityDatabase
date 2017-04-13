@@ -8,7 +8,7 @@
                 password,
                 salt,
                 Officer_SSN
-            FROM users
+            FROM User_Accounts
             WHERE
                 username = :username
         ";

@@ -6,6 +6,21 @@
         die("Redirecting to ../index.html");
     }
 
+    //Get Num Tickets
+    $query = "
+        SELECT
+            *
+        FROM Ticket
+        ORDER BY Time_Created
+    ";
+
+    try{
+        $tickets = $db->prepare($query);
+        $result = $tickets->execute();
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_tickets = $tickets->rowCount();
+
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
@@ -21,6 +36,27 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_alarms = $stmt->rowCount();
+
+    //Get Shifts
+    $query = "
+        SELECT
+            *
+        FROM Shift_Assignment
+        WHERE
+        Officer_SSN = :ssn
+    ";
+
+    $query_params = array(
+        ':ssn' => $_SESSION['user']['Officer_SSN']
+    );
+
+    try{
+        $shifts = $db->prepare($query);
+        $result = $shifts->execute($query_params);
+        $shifts->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_shifts = $shifts->rowCount();
 
 ?>
 
@@ -120,7 +156,7 @@
                             <a href="alarms.php"><i class="fa fa-exclamation-triangle fa-fw"></i> Alarms</a>
                         </li>
                         <li>
-                            <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
+                            <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
@@ -142,36 +178,6 @@
                                 </li>
                                 <li>
                                     <a href="grid.html">Grid</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Third Level <span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
@@ -215,6 +221,28 @@
                                     <div id="alarms" class="huge"><?php echo $num_alarms?></div>
 
                                     <div>Unresolved Alarms!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="alarms.php">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-ticket fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><?php echo $num_tickets?></div>
+                                    <div>Support Tickets!</div>
                                 </div>
                             </div>
                         </div>
@@ -271,61 +299,68 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <div class="row">
-                                <div class="col-xs-3">
-                                    <i class="fa fa-support fa-5x"></i>
-                                </div>
-                                <div class="col-xs-9 text-right">
-                                    <div class="huge">13</div>
-                                    <div>Support Tickets!</div>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#">
-                            <div class="panel-footer">
-                                <span class="pull-left">View Details</span>
-                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                                <div class="clearfix"></div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
             </div>
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Area Chart Example
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Actions
-                                        <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a href="#">Action</a>
-                                        </li>
-                                        <li><a href="#">Another action</a>
-                                        </li>
-                                        <li><a href="#">Something else here</a>
-                                        </li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-area-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
+                  <div class="panel panel-default">
+                      <div class="panel-heading">
+                          <i class="fa fa-bar-chart-o fa-fw"></i> Your Shifts
+                      </div>
+                      <!-- /.panel-heading -->
+                      <div class="panel-body">
+                        <table width="100%" class="table table-striped table-bordered table-hover" id="shifts_table">
+                            <thead>
+                                <tr class="danger">
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Spots</th>
+                                    <th>Duration</th>
+                                    <th>Date Created</th>
+                                    <th> </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <?php while($row = $shifts->fetch()) { ?>
+                                <tr class="danger">
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td><?php
+                                  $query = "
+                                      SELECT
+                                          *
+                                      FROM Spot as S
+                                      WHERE S.Spot_UUID IN
+                                      (SELECT *
+                                      FROM Spot_Assignment
+                                      WHERE Shift_UUID = :shift)
+                                  ";
+
+                                  $query_params = array(
+                                      ':shift' => $_SESSION['Shift_UUID']
+                                  );
+
+                                  try{
+                                      $spots = $db->prepare($query);
+                                      $result = $spots->execute($query_params);
+                                      $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                  }
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                  while($spot_row = $spots->fetch()) {
+                                    echo $spots_row['Spot_UUID'];
+                                    echo ', ';
+                                  }?>
+                                  </td>
+                                  <td><?php echo $row['Duration']; ?></td>
+                                  <td><?php echo $row['Date Created']; ?></td>
+                                </tr>
+                                <?php } ?>
+                            <tbody>
+                          </table>
+                      </div>
+                      <!-- /.panel-body -->
+                  </div>
+                  <!-- /.panel -->
                     <!-- /.panel -->
                     <div class="panel panel-default">
                         <div class="panel-heading">
