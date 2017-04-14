@@ -9,7 +9,7 @@
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            Alarm_Event_UUID, Start_Time, End_Time, Duration, Spot_UUID, Coverage_Description
+            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description
         FROM Alarm_Event NATURAL JOIN Spot
         WHERE
         Resolved_Time = null
@@ -27,7 +27,7 @@
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            Alarm_Event_UUID, Start_Time, End_Time, Duration, Spot_UUID, Coverage_Description
+            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description
         FROM Alarm_Event NATURAL JOIN Spot
         WHERE
         NOT Resolved_Time = null
@@ -140,30 +140,6 @@
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="panels-wells.html">Panels and Wells</a>
-                                </li>
-                                <li>
-                                    <a href="buttons.html">Buttons</a>
-                                </li>
-                                <li>
-                                    <a href="notifications.html">Notifications</a>
-                                </li>
-                                <li>
-                                    <a href="typography.html">Typography</a>
-                                </li>
-                                <li>
-                                    <a href="icons.html"> Icons</a>
-                                </li>
-                                <li>
-                                    <a href="grid.html">Grid</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
                             <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
@@ -203,7 +179,6 @@
                                     <th>Spot ID</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
-                                    <th>Duration</th>
                                     <th>Spot Description</th>
                                     <th> </th>
                                 </tr>
@@ -215,7 +190,6 @@
                                   <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php echo $row['Duration']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
                                   <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
@@ -238,7 +212,6 @@
                                     <th>Spot ID</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
-                                    <th>Duration</th>
                                     <th>Resolved Time</th>
                                     <th>Spot Description</th>
                                 </tr>
@@ -250,7 +223,6 @@
                                   <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php echo $row['Duration']; ?></td>
                                   <td><?php echo $row['Resolved_Time']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
                                 </tr>

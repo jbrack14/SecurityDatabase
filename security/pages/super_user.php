@@ -123,6 +123,9 @@
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
                         <li>
+                            <a href="shifts.php"><i class="fa fa-shifts fa-fw"></i> Shifts</a>
+                        </li>
+                        <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
