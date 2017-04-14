@@ -24,6 +24,9 @@
         $supervisees = $db->prepare($query);
         $result = $supervisees->execute($query_params);
         $supervisees->setFetchMode(PDO::FETCH_ASSOC);
+        $supervisees2 = $db->prepare($query);
+        $result = $supervisees2->execute($query_params);
+        $supervisees2->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_supervisees = $supervisees->rowCount();
@@ -252,6 +255,7 @@
                                     <th>End Time</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
+                                    <th>Spots</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -261,12 +265,93 @@
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
-                                </tr>
+                                  <td><ul><?php $query = "
+                                        SELECT
+                                          *
+                                        FROM Spot AS sp NATURAL JOIN Spot_Assignment AS sa
+                                        WHERE sa.Shift_UUID = :shift_uuid
+                                    ";
+
+                                    $query_params = array(
+                                      ':shift_uuid' => $row['Shift_UUID']
+                                    );
+
+                                    try{
+                                        $spots = $db->prepare($query);
+                                        $result = $spots->execute($query_params);
+                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    while($row2 = $spots->fetch()) { ?>
+                                      <li><?php echo $row2['Coverage_Description']; ?></li>
+                                    <?php } ?>
+                                  </ul>
                               <?php } ?>
                             <tbody>
                           </table>
                     </div>
 
+                    <div class="panel panel-info">
+                        <div class="panel-success">
+                          <div class="panel-heading">
+                              <h4><b>Create New Shift</b></h4>
+                          </div>
+                          <br>
+                        <form class="form-horizontal" action="../php/newShift.php" method="post" role="form">
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Start Time:</label>
+                            <div class="col-lg-8">
+                              <input class="form-control" name="start" id="start" type="time" value="<?php echo $profile['First_Name'] ?>" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">End Time:</label>
+                            <div class="col-lg-8">
+                              <input class="form-control" name="end" id="end" type="time" value="<?php echo $profile['Last_Name'] ?>" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Officer:</label>
+                            <div class="col-lg-8">
+                              <label for="ssn">Select an Officer:</label>
+                                <select class="form-control" id="ssn" name="ssn">
+                                  <?php while($row = $supervisees2->fetch()) { ?>
+                                    <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
+                                  <?php } ?>
+                                </select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Spots:</label>
+                            <div class="col-lg-8">
+                              <label for="spots">Select Spots:</label>
+                                <select multiple="multiple" class="form-control" name="spots[]" id="spots">
+                                  <?php
+                                  $query = "
+                                      SELECT
+                                        *
+                                      FROM Spot
+                                  ";
+
+                                  try{
+                                      $spots = $db->prepare($query);
+                                      $result = $spots->execute($query_params);
+                                      $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                  }
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                  while($row = $spots->fetch()) { ?>
+                                    <option value="<?php echo $row['Spot_UUID']?>"><?php echo $row['Coverage_Description'] ?></option>
+                                  <?php } ?>
+                                </select>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-md-2 control-label"></label>
+                            <div class="col-md-8">
+                              <input type="submit" class="btn btn-primary" value="Create Shift">
+                            </div>
+                          </div>
+                        </form>
                     <hr>
                   </div>
                     <!-- /.panel -->
