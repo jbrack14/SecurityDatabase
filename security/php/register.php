@@ -14,7 +14,7 @@
         $query = "
             SELECT
                 1
-            FROM users
+            FROM User_Accounts
             WHERE
                 username = :username
         ";
@@ -50,9 +50,9 @@
         $query = "
             SELECT
                 1
-            FROM Supervisor
+            FROM Security_Officer
             WHERE
-                ssn = :ssn
+                Super_SSN = :ssn
         ";
 
         $query_params = array(
@@ -74,13 +74,11 @@
                 username,
                 password,
                 salt,
-                email,
 				        Officer_SSN
             ) VALUES (
                 :username,
                 :password,
                 :salt,
-                :email,
 				        :ssn
             )
         ";
@@ -93,7 +91,6 @@
             ':username' => $_POST['username'],
             ':password' => $password,
             ':salt' => $salt,
-            ':email' => $email,
             ':ssn'=> $_POST['ssn']
         );
         try {

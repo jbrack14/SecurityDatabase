@@ -37,6 +37,7 @@
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_alarms = $stmt->rowCount();
 
+
     //Get Shifts
     $query = "
         SELECT
@@ -288,10 +289,9 @@
                       <div class="panel-body">
                         <table width="100%" class="table table-striped table-bordered table-hover" id="shifts_table">
                             <thead>
-                                <tr class="danger">
+                                <tr class="info">
                                     <th>Start Time</th>
                                     <th>End Time</th>
-                                    <th>Spots</th>
                                     <th>Duration</th>
                                     <th>Date Created</th>
                                     <th> </th>
@@ -299,37 +299,11 @@
                             </thead>
                             <tbody>
                               <?php while($row = $shifts->fetch()) { ?>
-                                <tr class="danger">
+                                <tr>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php
-                                  $query = "
-                                      SELECT
-                                          *
-                                      FROM Spot as S
-                                      WHERE S.Spot_UUID IN
-                                      (SELECT *
-                                      FROM Spot_Assignment
-                                      WHERE Shift_UUID = :shift)
-                                  ";
-
-                                  $query_params = array(
-                                      ':shift' => $_SESSION['Shift_UUID']
-                                  );
-
-                                  try{
-                                      $spots = $db->prepare($query);
-                                      $result = $spots->execute($query_params);
-                                      $spots->setFetchMode(PDO::FETCH_ASSOC);
-                                  }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                  while($spot_row = $spots->fetch()) {
-                                    echo $spots_row['Spot_UUID'];
-                                    echo ', ';
-                                  }?>
-                                  </td>
                                   <td><?php echo $row['Duration']; ?></td>
-                                  <td><?php echo $row['Date Created']; ?></td>
+                                  <td><?php echo $row['Created_Time']; ?></td>
                                 </tr>
                                 <?php } ?>
                             <tbody>

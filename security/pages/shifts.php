@@ -28,17 +28,17 @@
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_supervisees = $supervisees->rowCount();
 
-    //Get Unresolved Alarm Alerts
+    //Get Shifts
     $query = "
         SELECT
             *
-        FROM (Shift_Assignment
-              NATURAL JOIN
-              Spot_Assignment)
-              NATURAL JOIN Security_Officer)
-              WHERE
-              Super_SSN = :ssn
-              ORDER BY Start_Time
+        FROM Shift_Assignment AS S INNER JOIN Security_Officer AS O ON S.Officer_SSN = O.SSN
+        WHERE
+        S.Officer_SSN IN
+        (SELECT
+            SSN
+        FROM Security_Officer
+        WHERE Super_SSN = :ssn)
     ";
 
     $query_params = array(
@@ -47,10 +47,11 @@
 
     try{
         $shifts = $db->prepare($query);
-        $result = $shifts->execute();
+        $result = $shifts->execute($query_params);
         $shifts->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_shifts = $shifts->rowCount();
 ?>
 
 <!DOCTYPE html>
@@ -192,7 +193,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            Supervisees
+                            <h4><b>Supervisees</h4><b>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -239,34 +240,29 @@
                           </table>
                     </div>
 
-                    <div class="panel panel-success">
+                    <div class="panel panel-info">
                         <div class="panel-heading">
+                            <h4><b>All Shifts</b></h4>
                             There are currently <b><?php echo $num_shifts?></b> shifts under your management.
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
-                                <tr class="success">
+                                <tr>
                                     <th>Start Time</th>
                                     <th>End Time</th>
-                                    <th>Duration</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
-                                    <th>Spot Descriptions</th>
-                                    <th>Spot Description</th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $resolved->fetch()) { ?>
-                                <tr class="success">
-                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
-                                  <td><?php echo $row['Spot_ID']; ?></td>
+                              <?php while($row = $shifts->fetch()) { ?>
+                                <tr>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php echo $row['Duration']; ?></td>
-                                  <td><?php echo $row['Resolved_Time']; ?></td>
-                                  <td><?php echo $row['Coverage_Description']; ?></td>
+                                  <td><?php echo $row['Last_Name']; ?></td>
+                                  <td><?php echo $row['First_Name']; ?></td>
                                 </tr>
-                                <?php } ?>
+                              <?php } ?>
                             <tbody>
                           </table>
                     </div>
