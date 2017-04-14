@@ -9,8 +9,7 @@
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description
-        FROM Alarm_Event NATURAL JOIN Spot
+            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description        FROM Alarm_Event NATURAL JOIN Spot
         WHERE
         Resolved_Time = null
         ORDER BY Start_Time
@@ -138,18 +137,6 @@
                         </li>
                         <li>
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="blank.html">Blank Page</a>
-                                </li>
-                                <li>
-                                    <a href="login.html">Login Page</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
                         </li>
                     </ul>
                 </div>
