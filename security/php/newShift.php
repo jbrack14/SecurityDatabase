@@ -24,27 +24,13 @@
         try {
             $stmt = $db->prepare($query);
             $result = $stmt->execute($query_params);
-        }
+      }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-        $query = "
-              SELECT Shift_UUID
-              FROM Shift_Assignment
-              WHERE (Start_Time = :start) AND (Officer_SSN = :ssn) AND (End_Time = :end)
-        ";
-
-        $query_params = array(
-            ':start' => $_POST['start'],
-            ':ssn' => $_POST['ssn'],
-            ':end' => $_POST['end']
-        );
-
-        try {
-            $stmt = $db->prepare($query);
-            $result = $stmt->execute($query_params);
-        }
-        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-        $shift_uuid = $stmt->fetch();
+        $sql = "SELECT @last_uuid";
+        $stmt = $db->prepare($sql);
+        $result = $stmt->execute();
+        $shift_id = implode(',', $stmt->fetch());
 
         foreach ($_POST['spots'] as $spot) {
           $query = "
@@ -58,7 +44,7 @@
           ";
 
           $query_params = array(
-              ':shift' => $shift_uuid,
+              ':shift' => $shift_id,
               ':spot' => $spot
           );
 
@@ -66,7 +52,7 @@
               $stmt = $db->prepare($query);
               $result = $stmt->execute($query_params);
           }
-          catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+          catch(PDOException $ex){echo $shift_id; echo ' --- '; echo $spot; die("Failed to run query: " . $ex->getMessage()); }
         }
 
         header("Location: ../pages/shifts.php");

@@ -248,6 +248,7 @@
                             <h4><b>All Shifts</b></h4>
                             There are currently <b> <?php echo $num_shifts ?> </b> shifts under your management.
                         </div>
+                        <div>
                         <table width="100%" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
@@ -299,6 +300,7 @@
                               <?php } ?>
                             <tbody>
                           </table>
+                          <div>
                     </div>
 
                     <div class="panel panel-info">
