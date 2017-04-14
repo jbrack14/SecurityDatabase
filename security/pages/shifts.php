@@ -246,9 +246,9 @@
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h4><b>All Shifts</b></h4>
-                            There are currently <b><?php echo $num_shifts?></b> shifts under your management.
+                            There are currently <b> <?php echo $num_shifts ?> </b> shifts under your management.
                         </div>
-                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <table width="100%" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
                                     <th>Start Time</th>
@@ -256,6 +256,7 @@
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Spots</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -286,6 +287,15 @@
                                       <li><?php echo $row2['Coverage_Description']; ?></li>
                                     <?php } ?>
                                   </ul>
+                                </td>
+                                <td>
+                                  <form action="../php/delete_shift.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Shift_UUID']; ?>" name="delete" id="delete">
+                                      <button type="submit" tabindex="4" class="form-control btn btn-danger"> Delete </button>
+                                    </div>
+                                  </form>
+                                </td><
                               <?php } ?>
                             <tbody>
                           </table>
