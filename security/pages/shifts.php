@@ -6,22 +6,51 @@
         die("Redirecting to ../index.html");
     }
 
+    //Get Supervisees
+    $query = "
+        SELECT
+          *
+        FROM Security_Officer
+        WHERE
+        Super_SSN = :ssn
+        ORDER BY Last_Name
+    ";
+
+    $query_params = array(
+        ':ssn' => $_SESSION['user']['Officer_SSN']
+    );
+
+    try{
+        $supervisees = $db->prepare($query);
+        $result = $supervisees->execute($query_params);
+        $supervisees->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_supervisees = $supervisees->rowCount();
+
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
             *
-        FROM Ticket
-        ORDER BY Time_Created
+        FROM (Shift_Assignment
+              NATURAL JOIN
+              Spot_Assignment)
+              NATURAL JOIN Security_Officer)
+              WHERE
+              Super_SSN = :ssn
+              ORDER BY Start_Time
     ";
 
+    $query_params = array(
+        ':ssn' => $_SESSION['user']['Officer_SSN']
+    );
+
     try{
-        $tickets = $db->prepare($query);
-        $result = $tickets->execute();
-        $tickets->setFetchMode(PDO::FETCH_ASSOC);
+        $shifts = $db->prepare($query);
+        $result = $shifts->execute();
+        $shifts->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-    $num_tickets = $tickets->rowCount();
-
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +64,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Ticket System</title>
+    <title>Shift Management System</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -144,48 +173,6 @@
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Second Level Item</a>
-                                </li>
-                                <li>
-                                    <a href="#">Third Level <span class="fa arrow"></span></a>
-                                    <ul class="nav nav-third-level">
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                        <li>
-                                            <a href="#">Third Level Item</a>
-                                        </li>
-                                    </ul>
-                                    <!-- /.nav-third-level -->
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="blank.html">Blank Page</a>
-                                </li>
-                                <li>
-                                    <a href="login.html">Login Page</a>
-                                </li>
-                            </ul>
-                            <!-- /.nav-second-level -->
-                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -196,7 +183,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Tickets</h1>
+                    <h1 class="page-header">Shift Management</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -205,29 +192,79 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            There are currently <b><?php echo $num_tickets?></b> tickets.
+                            Supervisees
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr>
-                                    <th>Time Created</th>
-                                    <th>Name</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Phone Number</th>
                                     <th>Email</th>
-                                    <th>Description</th>
+                                    <th>Shifts</th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $tickets->fetch()) { ?>
+                              <?php while($row = $supervisees->fetch()) { ?>
                                 <tr>
-                                  <td><?php echo $row['Time_Created']; ?></td>
-                                  <td><?php echo $row['Name']; ?></td>
+                                  <td><?php echo $row['Last_Name']; ?></td>
+                                  <td><?php echo $row['First_Name']; ?></td>
+                                  <td><?php echo $row['Phone_Number']; ?></td>
                                   <td><?php echo $row['Email']; ?></td>
-                                  <td><?php echo $row['Description']; $_SESSION['desc'] = $row['Description'];?></td>
-                                  <td><form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
-                                    <div class="form-group">
-                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
-                                    </div>
-                                  </td>
+                                  <td><?php
+
+                                  $query = "
+                                      SELECT
+                                        *
+                                      FROM Shift_Assignment
+                                      WHERE
+                                      Officer_SSN = :ssn
+                                  ";
+
+                                  $query_params = array(
+                                      ':ssn' => $row['SSN']
+                                  );
+
+                                  try{
+                                      $supervisee_shifts = $db->prepare($query);
+                                      $result = $supervisee_shifts->execute($query_params);
+                                      $supervisee_shifts->setFetchMode(PDO::FETCH_ASSOC);
+                                  }
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                  $num_supervisee_shifts = $supervisee_shifts->rowCount();
+                                  echo $num_supervisee_shifts; ?></td>
+                                </tr>
+                                <?php } ?>
+                            <tbody>
+                          </table>
+                    </div>
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            There are currently <b><?php echo $num_shifts?></b> shifts under your management.
+                        </div>
+                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                            <thead>
+                                <tr class="success">
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Duration</th>
+                                    <th>Last Name</th>
+                                    <th>First Name</th>
+                                    <th>Spot Descriptions</th>
+                                    <th>Spot Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              <?php while($row = $resolved->fetch()) { ?>
+                                <tr class="success">
+                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
+                                  <td><?php echo $row['Spot_ID']; ?></td>
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo $row['Duration']; ?></td>
+                                  <td><?php echo $row['Resolved_Time']; ?></td>
+                                  <td><?php echo $row['Coverage_Description']; ?></td>
                                 </tr>
                                 <?php } ?>
                             <tbody>

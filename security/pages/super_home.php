@@ -284,12 +284,11 @@
                                     <i class="fa fa-group fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">124</div>
-                                    <div>View Shifts</div>
+                                    <div>Manage Shifts</div>
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
+                        <a href="shifts.php">
                             <div class="panel-footer">
                                 <span class="pull-left">View Details</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
