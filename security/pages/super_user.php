@@ -1,10 +1,7 @@
 <?php
     require("../config.php");
-    if(empty($_SESSION['user']))
-    {
-        header("Location: ../index.html");
-        die("Redirecting to ../index.html");
-    }
+    require("../basicFunctions.php");
+	doLogInCheck();
 
     $query = "
         SELECT
