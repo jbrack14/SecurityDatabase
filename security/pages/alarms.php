@@ -173,13 +173,14 @@
                             <tbody>
                               <?php while($row = $unresolved->fetch()) { ?>
                                 <tr class="danger">
-                                  <td><?php echo $row['Alarm_Event_UUID']; $_SESSION['alarm_uuid'] = $row['Alarm_Event_UUID'];?></td>
+                                  <td><?php echo $row['Alarm_Event_UUID'];?></td>
                                   <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
                                   <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="resolve" id="resolve">
                                       <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-success" value="Resolve">
                                     </div></td>
                                 </tr>

@@ -303,7 +303,7 @@
                                     ";
 
                                     $query_params = array(
-                                        ':shift' => $_SESSION['Shift_UUID']
+                                        ':shift' => $row['Shift_UUID']
                                     );
 
                                     try{

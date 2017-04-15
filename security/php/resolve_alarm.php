@@ -10,7 +10,7 @@
         ";
 
         $query_params = array(
-            ':uuid' => $_SESSION['alarm_uuid']
+            ':uuid' => $_POST['resolve']
         );
 
         try {

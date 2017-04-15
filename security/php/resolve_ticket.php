@@ -6,11 +6,11 @@
         $query = "
             DELETE
             FROM Ticket
-            WHERE Description = :desc
+            WHERE Ticket_UUID = :uuid
         ";
 
         $query_params = array(
-            ':desc' => $_SESSION['desc']
+            ':uuid' => $_POST['resolve']
         );
 
         try {

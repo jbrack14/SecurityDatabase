@@ -156,9 +156,10 @@
                                   <td><?php echo $row['Time_Created']; ?></td>
                                   <td><?php echo $row['Name']; ?></td>
                                   <td><?php echo $row['Email']; ?></td>
-                                  <td><?php echo $row['Description']; $_SESSION['desc'] = $row['Description'];?></td>
+                                  <td><?php echo $row['Description'];?></td>
                                   <td><form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Ticket_UUID']; ?>" name="resolve" id="resolve">
                                       <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
                                     </div>
                                   </td>
