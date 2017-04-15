@@ -142,6 +142,9 @@
                         <li>
                             <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
                         </li>
+                        <li>
+                            <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -152,7 +155,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Shift Management</h1>
+                    <h1 class="page-header">Building Management</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>

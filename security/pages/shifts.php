@@ -153,6 +153,9 @@
                         <li>
                             <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
                         </li>
+                        <li>
+                            <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->

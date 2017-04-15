@@ -135,6 +135,9 @@
                         <li>
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
+                        <li>
+                            <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
