@@ -3,7 +3,7 @@
 
     function isLoggedIn()
 	{
-		if(empty($_SESSION['Account_UUID']))
+		if(empty($_SESSION['user']))
 		{
 			return false;
 		}

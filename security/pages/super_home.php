@@ -2,7 +2,7 @@
     require("../config.php");
     require("../basicFunctions.php");
 	doLogInCheck();
-	
+
     //Get Num Tickets
     $query = "
         SELECT
@@ -157,6 +157,9 @@
                         </li>
                         <li>
                             <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
+                        </li>
+                        <li>
+                            <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
