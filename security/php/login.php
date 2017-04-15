@@ -4,7 +4,7 @@
     if(!empty($_POST)){
         $query = "
             SELECT
-				Account_UUID,
+				        Account_UUID,
                 username,
                 password,
                 salt
@@ -36,8 +36,7 @@
         if($login_ok){
             unset($user_row['salt']);
             unset($user_row['password']);
-            $_SESSION['user'] = $user_row; //TODO: Too heavy. Do not need to keep all of these data.
-			$_SESSION['User_UUID'] = $user_row['Account_UUID'];
+			      $_SESSION['User_UUID'] = $user_row['Account_UUID'];
             //print("logging in..." . $user_row['Account_UUID'] . '|||x');
 			header("Location: ../pages/home.php");
 			die("Redirecting to: ../pages/home.php");

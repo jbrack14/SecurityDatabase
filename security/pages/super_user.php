@@ -11,7 +11,7 @@
             SSN = :ssn
     ";
     $query_params = array(
-        ':ssn' => $_SESSION['user']['Officer_SSN']
+        ':ssn' => getUserSSN()
     );
 
     try{
@@ -120,7 +120,7 @@
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
                         <li>
-                            <a href="shifts.php"><i class="fa fa-shifts fa-fw"></i> Shifts</a>
+                            <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
                         </li>
                         <li>
                             <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
@@ -144,7 +144,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Welcome <?php echo $_SESSION['user']['username'] ?>
+                            Welcome <?php echo getUsername() ?>
                         </div>
                         <br>
                         <div>
@@ -182,7 +182,7 @@
                               <div class="form-group">
                                 <label class="col-md-2 control-label">Username:</label>
                                 <div class="col-md-8">
-                                  <input class="form-control" type="text" value="<?php echo $_SESSION['user']['username'] ?>" disabled>
+                                  <input class="form-control" type="text" value="<?php echo getUsername() ?>" disabled>
                                 </div>
                               </div>
                               <div class="form-group">

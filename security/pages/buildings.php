@@ -31,7 +31,7 @@
     ";
 
     $query_params = array(
-        ':ssn' => $_SESSION['user']['Officer_SSN']
+        ':ssn' => getUserSSN()
     );
 
     try{

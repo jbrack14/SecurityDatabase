@@ -3,7 +3,7 @@
 
     function isLoggedIn()
 	{
-		if(empty($_SESSION['user']))
+		if(empty($_SESSION['User_UUID']))
 		{
 			return false;
 		}
@@ -28,11 +28,11 @@
             Officer_SSN
         FROM User_Accounts
         WHERE
-        Account_UUID = :ssn
+        Account_UUID = :uuid
     ";
 
     $query_params = array(
-        ':uuid' => $_SESSION['Account_UUID']
+        ':uuid' => $_SESSION['User_UUID']
     );
     try{
         $account_officer = $db->prepare($query);
@@ -40,7 +40,31 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $officer_ssn = $account_officer->fetch();
-    return $officer_ssn;
+    return implode(',', $officer_ssn);
+  }
+
+  function getUsername()
+  {
+  	global $db;
+    //Get Officer SSN
+    $query = "
+        SELECT
+        Username
+        FROM User_Accounts
+        WHERE
+        Account_UUID = :uuid
+    ";
+
+    $query_params = array(
+        ':uuid' => $_SESSION['User_UUID']
+    );
+    try{
+        $account_officer = $db->prepare($query);
+        $result = $account_officer->execute($query_params);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $officer_ssn = $account_officer->fetch();
+    return implode(',', $officer_ssn);
   }
 
 

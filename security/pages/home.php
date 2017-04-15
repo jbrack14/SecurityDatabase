@@ -42,8 +42,8 @@
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_alarms = $stmt->rowCount();
 
-
     //Get Shifts
+
     $query = "
         SELECT
             *
@@ -53,7 +53,7 @@
     ";
 
     $query_params = array(
-        ':ssn' => $_SESSION['user']['Officer_SSN']
+        ':ssn' => getUserSSN()
     );
 
     try{
@@ -274,7 +274,7 @@
                                 <tr>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php echo $row['Duration']; ?></td>
+                                  <td><?php echo ($row['Duration_s']/3600); ?></td>
                                   <td><?php echo $row['Created_Time']; ?></td>
                                 </tr>
                                 <?php } ?>
