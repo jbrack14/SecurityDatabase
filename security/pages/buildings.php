@@ -3,7 +3,7 @@
     require("../basicFunctions.php");
 	doLogInCheck();
 
-    //Get Supervisees
+    //Get Buildings
     $query = "
         SELECT
           *
@@ -144,6 +144,9 @@
                         </li>
                         <li>
                             <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
+                        </li>
+                        <li>
+                            <a href="spots.php"><i class="fa fa-map fa-fw"></i> Spots</a>
                         </li>
                     </ul>
                 </div>
