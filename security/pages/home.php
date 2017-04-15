@@ -3,6 +3,14 @@
     require("../basicFunctions.php");
 	doLogInCheck();
 	
+	
+	if(isSuperUser($_SESSION['User_UUID']))
+	{
+		header("Location: ../pages/super_home.php");
+		die("Redirecting to: ../pages/super_home.php");
+	}
+	
+	
     //Get Num Tickets
     $query = "
         SELECT

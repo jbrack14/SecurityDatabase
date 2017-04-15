@@ -4,10 +4,10 @@
     if(!empty($_POST)){
         $query = "
             SELECT
+				Account_UUID,
                 username,
                 password,
-                salt,
-                Officer_SSN
+                salt
             FROM User_Accounts
             WHERE
                 username = :username
@@ -31,49 +31,16 @@
             if($check_password === $user_row['password']){
                 $login_ok = true;
             }
-            $check_ssn = $user_row['Officer_SSN'];
-        }
-
-        $query = "
-            SELECT
-                1
-            FROM Security_Officer
-            WHERE
-                :ssn IN (
-                  SELECT
-                      Super_SSN
-                  FROM Security_Officer
-                  )
-        ";
-        $query_params = array(
-            ':ssn' => $check_ssn
-        );
-
-        try{
-            $stmt = $db->prepare($query);
-            $result = $stmt->execute($query_params);
-        }
-        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-        $row = $stmt->fetch();
-        $is_super = false;
-        if($row){
-          $is_super = true;
         }
 
         if($login_ok){
             unset($user_row['salt']);
             unset($user_row['password']);
-            $_SESSION['user'] = $user_row;
-            if($is_super)
-            {
-              header("Location: ../pages/super_home.php");
-              die("Redirecting to: ../pages/super_home.php");
-            }
-            else {
-              header("Location: ../pages/home.php");
-              die("Redirecting to: ../pages/home.php");
-            }
-
+            $_SESSION['user'] = $user_row; //TODO: Too heavy. Do not need to keep all of these data.
+			$_SESSION['User_UUID'] = $user_row['Account_UUID'];
+            //print("logging in..." . $user_row['Account_UUID'] . '|||x');
+			header("Location: ../pages/home.php");
+			die("Redirecting to: ../pages/home.php");
         }
         else{
             print("Login Failed.");
