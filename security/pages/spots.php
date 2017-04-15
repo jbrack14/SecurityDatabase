@@ -162,7 +162,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Shift Management</h1>
+                    <h1 class="page-header">Spot Management</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -234,7 +234,7 @@
                                           $result = $officer->execute($query_params);
                                       }
                                       catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                      echo $officer->fetch()?>
+                                      ?> : <?php echo implode(', ', $officer->fetch())?>
                                     </li>
                                   <?php } ?>
                                   </td>
@@ -307,7 +307,7 @@
                                           $result = $officer->execute($query_params);
                                       }
                                       catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                      echo $officer->fetch()?>
+                                      ?> : <?php echo implode(', ', $officer->fetch())?>
                                     </li>
                                   <?php } ?>
                                 </ul>
