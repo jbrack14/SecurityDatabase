@@ -31,6 +31,9 @@
         $officers = $db->prepare($query);
         $result = $officers->execute();
         $officers->setFetchMode(PDO::FETCH_ASSOC);
+        $officers2 = $db->prepare($query);
+        $result2 = $officers2->execute();
+        $officers2->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
@@ -210,6 +213,7 @@
                                     <th>Address</th>
                                     <th>Supervisor</th>
                                     <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -224,7 +228,7 @@
 
                                   $query = "
                                       SELECT
-                                        Last_Name, First_Name
+                                        Last_Name, First_Name, SSN
                                       FROM Security_Officer
                                       WHERE
                                       SSN = :ssn
@@ -240,13 +244,37 @@
                                   }
                                   catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                   $row2 = $supervisor->fetch();
-                                  echo $row2['First_Name']; ?> <?php echo $row2['Last_Name']; ?>
+                                  ?>
+                                  <form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
+                                        <div>
+                                            <select class="form-control" id="super" name="super">
+                                              <?php if($row2) { ?>
+                                              <option value="<?php echo $row2['SSN']; ?>" selected disabled><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
+                                              <?php } else {?>
+                                                <option value="" selected disabled>None</option>
+                                              <?php } ?>
+                                              <?php $result2 = $officers2->execute();
+                                                $officers2->setFetchMode(PDO::FETCH_ASSOC);
+                                                while($row3 = $officers2->fetch()) { ?>
+                                                <option value="<?php echo $row3['SSN']; ?>"><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
+                                              <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                      <div class="form-group">
+                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
+                                      </div>
+                                  </form>
                                   </td>
                                   <td>
                                     <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
                                       <div class="form-group">
                                         <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
-                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"> Delete </button>
+                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                       </div>
                                     </form>
                                   </td>
