@@ -8,7 +8,7 @@
         SELECT
           *
         FROM Security_Officer
-        WHERE Super_SSN = null
+        WHERE Super_SSN IS NOT NULL
         ORDER BY Last_Name
     ";
 
@@ -24,7 +24,6 @@
         SELECT
           *
         FROM Security_Officer
-        WHERE Super_SSN = null
         ORDER BY Last_Name
     ";
 
@@ -32,6 +31,9 @@
         $officers = $db->prepare($query);
         $result = $officers->execute();
         $officers->setFetchMode(PDO::FETCH_ASSOC);
+        $officers2 = $db->prepare($query);
+        $result2 = $officers2->execute();
+        $officers2->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
@@ -41,7 +43,7 @@
             *
         FROM Security_Officer
         WHERE
-        Super_SSN = null
+        Super_SSN IS NULL
     ";
 
     try{
@@ -64,6 +66,13 @@
     <meta name="author" content="">
 
     <title>Shift Management System</title>
+
+    <!-- Bootstrap Validator-->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css"/>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/js/bootstrapValidator.min.js"> </script>
+
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -137,20 +146,33 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
+                        <?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
+                        <li>
+                            <a href="officers.php"><i class="fa fa-users fa-fw"></i> Officers</a>
+                        </li>
+                        <?php } ?>
+                        <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
                         <li>
                             <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
                         </li>
+                        <?php } else { ?>
+                          <li>
+                              <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
+                          </li>
+                        <?php } ?>
                         <li>
                             <a href="alarms.php"><i class="fa fa-exclamation-triangle fa-fw"></i> Alarms</a>
                         </li>
                         <li>
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
+                        <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
                         <li>
-                            <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
+                            <a href="shifts.php"><i class="fa fa-calendar fa-fw"></i> Shifts</a>
                         </li>
+                        <?php } ?>
                         <li>
                             <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
                         </li>
@@ -190,10 +212,12 @@
                                     <th>Email</th>
                                     <th>Address</th>
                                     <th>Supervisor</th>
+                                    <th></th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $supervisees->fetch()) { ?>
+                              <?php while($row = $officers->fetch()) { ?>
                                 <tr>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
@@ -204,10 +228,10 @@
 
                                   $query = "
                                       SELECT
-                                        *
+                                        Last_Name, First_Name, SSN
                                       FROM Security_Officer
                                       WHERE
-                                      Officer_SSN = :ssn
+                                      SSN = :ssn
                                   ";
 
                                   $query_params = array(
@@ -219,7 +243,41 @@
                                       $result = $supervisor->execute($query_params);
                                   }
                                   catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                  echo $row['First_Name']; ?> <?php echo $row['Last_Name']; ?></td>
+                                  $row2 = $supervisor->fetch();
+                                  ?>
+                                  <form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
+                                        <div>
+                                            <select class="form-control" id="super" name="super">
+                                              <?php if($row2) { ?>
+                                              <option value="<?php echo $row2['SSN']; ?>" selected disabled><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
+                                              <?php } else {?>
+                                                <option value="" selected disabled>None</option>
+                                              <?php } ?>
+                                              <?php $result2 = $officers2->execute();
+                                                $officers2->setFetchMode(PDO::FETCH_ASSOC);
+                                                while($row3 = $officers2->fetch()) { ?>
+                                                <option value="<?php echo $row3['SSN']; ?>"><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
+                                              <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                      <div class="form-group">
+                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
+                                      </div>
+                                  </form>
+                                  </td>
+                                  <td>
+                                    <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
+                                      <div class="form-group">
+                                        <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
+                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
+                                      </div>
+                                    </form>
+                                  </td>
                                 </tr>
                                 <?php } ?>
                             <tbody>
@@ -282,50 +340,52 @@
                               <h4><b>Create New Shift</b></h4>
                           </div>
                           <br>
-                        <form class="form-horizontal" action="../php/newShift.php" method="post" role="form">
+                        <form class="form-horizontal" data-toggle="validator" action="../php/newOfficer.php" method="post" role="form">
                           <div class="form-group">
-                            <label class="col-lg-2 control-label">Start Time:</label>
+                            <label class="col-lg-2 control-label">Last Name:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="start" id="start" type="time" value="<?php echo $profile['First_Name'] ?>" required>
+                              <input class="form-control" name="last" id="last" type="text" placeholder="Last Name" required>
                             </div>
                           </div>
                           <div class="form-group">
-                            <label class="col-lg-2 control-label">End Time:</label>
+                            <label class="col-lg-2 control-label">First Name:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="end" id="end" type="time" value="<?php echo $profile['Last_Name'] ?>" required>
+                              <input class="form-control" name="first" id="first" type="text" placeholder="First Name" required>
                             </div>
                           </div>
                           <div class="form-group">
-                            <label class="col-lg-2 control-label">Officer:</label>
+                            <label class="col-lg-2 control-label">SSN:</label>
                             <div class="col-lg-8">
-                              <label for="ssn">Select an Officer:</label>
-                                <select class="form-control" id="ssn" name="ssn">
-                                  <?php while($row = $supervisees2->fetch()) { ?>
+                              <input class="form-control" name="ssn" id="ssn" type="text" data-minlength="9" data-minlength-error="Invalid Social Security Number" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Phone Number:</label>
+                            <div class="col-lg-8">
+                              <input class="form-control" data-minlength="10" data-minlength-error="Invalid Phone Number" name="phone" id="phone" type="text" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Email:</label>
+                            <div class="col-lg-8">
+                              <input class="form-control" name="email" id="email" type="text" placeholder="you@email.com" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Address:</label>
+                            <div class="col-lg-8">
+                              <input class="form-control" name="address" id="address" type="text" placeholder="Address" required>
+                            </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-lg-2 control-label">Supervisor:</label>
+                            <div class="col-lg-8">
+                              <label for="super">Select an Officer:</label>
+                                <select class="form-control" id="super" name="super">
+                                  <?php $result = $officers->execute();
+                                  $officers->setFetchMode(PDO::FETCH_ASSOC);
+                                  while($row = $officers->fetch()) { ?>
                                     <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
-                                  <?php } ?>
-                                </select>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Spots:</label>
-                            <div class="col-lg-8">
-                              <label for="spots">Select Spots:</label>
-                                <select multiple="multiple" class="form-control" name="spots[]" id="spots">
-                                  <?php
-                                  $query = "
-                                      SELECT
-                                        *
-                                      FROM Spot
-                                  ";
-
-                                  try{
-                                      $spots = $db->prepare($query);
-                                      $result = $spots->execute($query_params);
-                                      $spots->setFetchMode(PDO::FETCH_ASSOC);
-                                  }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                  while($row = $spots->fetch()) { ?>
-                                    <option value="<?php echo $row['Spot_UUID']?>"><?php echo $row['Coverage_Description'] ?></option>
                                   <?php } ?>
                                 </select>
                             </div>
@@ -333,7 +393,7 @@
                           <div class="form-group">
                             <label class="col-md-2 control-label"></label>
                             <div class="col-md-8">
-                              <input type="submit" class="btn btn-primary" value="Create Shift">
+                              <input type="submit" class="btn btn-primary" value="Add Officer">
                             </div>
                           </div>
                         </form>
@@ -355,6 +415,9 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap Validator JavaScript -->
+    <script src="../node_modules/bootstrap-validator/dist/validator.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>

@@ -129,6 +129,6 @@
 	function isSysAdmin($UserUUID)
 	{
 		//TODO: We need admin account in the future.
-		return false;
+		return true;
 	}
 ?>
