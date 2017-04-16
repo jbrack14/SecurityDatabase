@@ -1,5 +1,6 @@
 <?php
     require("../config.php");
+    require("../basicFunctions.php");
     if(!empty($_POST))
     {
 
@@ -21,7 +22,7 @@
             ':phone' => $_POST['phone'],
             ':email' => $_POST['email'],
             ':address'=> $_POST['address'],
-            ':ssn'=>$_SESSION['user']['Officer_SSN']
+            ':ssn'=> getUserSSN()
         );
 
         try {

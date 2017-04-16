@@ -117,7 +117,7 @@
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="super_user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <li><a href="user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
                         </li>
                         <li class="divider"></li>
                         <li><a href="../php/logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
@@ -153,7 +153,7 @@
                         <?php } ?>
                         <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
                         <li>
-                            <a href="super_user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
+                            <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
                         </li>
                         <?php } else { ?>
                           <li>
