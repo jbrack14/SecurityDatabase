@@ -152,6 +152,9 @@
                         <li>
                             <a href="spots.php"><i class="fa fa-map fa-fw"></i> Spots</a>
                         </li>
+                        <li>
+                            <a href="cameras.php"><i class="fa fa-camera fa-fw"></i> Cameras</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -181,6 +184,7 @@
                                     <th>Room Number</th>
                                     <th>Description</th>
                                     <th>Shifts</th>
+                                    <th>Cameras<th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -191,7 +195,6 @@
                                   <td><?php echo $row['Room_Num']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
                                   <td><ul><?php
-
                                   $query = "
                                       SELECT
                                         *
@@ -236,6 +239,33 @@
                                       catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                       ?> : <?php echo implode(', ', $officer->fetch())?>
                                     </li>
+                                  <?php } ?>
+                                  </td>
+                                  <td><ul><?php
+                                  $query = "
+                                      SELECT
+                                        Brand, Model, Camera_UID
+                                      FROM Camera
+                                      WHERE
+                                      Spot_UUID = :spot_id
+                                  ";
+
+                                  $query_params = array(
+                                      ':spot_id' => $row['Spot_UUID']
+                                  );
+
+                                  try{
+                                      $cameras = $db->prepare($query);
+                                      $result = $cameras->execute($query_params);
+                                      $cameras->setFetchMode(PDO::FETCH_ASSOC);
+                                  }
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+
+                                  while($row2 = $cameras->fetch()) {?>
+                                    <table>
+                                    <tr><td><?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?></td><td><?php echo array_slice($row2['Camera_UID'], -4)?></td>
+                                    </tr>
+                                    </table>
                                   <?php } ?>
                                   </td>
                                 </tr>
@@ -311,6 +341,33 @@
                                     </li>
                                   <?php } ?>
                                 </ul>
+                                  </td>
+                                  <td><ul><?php
+                                  $query = "
+                                      SELECT
+                                        Brand, Model, Camera_UID
+                                      FROM Camera
+                                      WHERE
+                                      Spot_UUID = :spot_id
+                                  ";
+
+                                  $query_params = array(
+                                      ':spot_id' => $row['Spot_UUID']
+                                  );
+
+                                  try{
+                                      $cameras = $db->prepare($query);
+                                      $result = $cameras->execute($query_params);
+                                      $cameras->setFetchMode(PDO::FETCH_ASSOC);
+                                  }
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+
+                                  while($row2 = $cameras->fetch()) {?>
+                                    <table>
+                                    <tr><td><?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?></td><td><?php echo array_slice($row2['Camera_UID'], -4)?></td>
+                                    </tr>
+                                    </table>
+                                  <?php } ?>
                                   </td>
                                 </tr>
                                 <?php } ?>

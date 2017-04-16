@@ -148,6 +148,9 @@
                         <li>
                             <a href="spots.php"><i class="fa fa-map fa-fw"></i> Spots</a>
                         </li>
+                        <li>
+                            <a href="cameras.php"><i class="fa fa-camera fa-fw"></i> Cameras</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
