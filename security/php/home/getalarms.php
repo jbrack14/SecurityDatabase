@@ -1,5 +1,5 @@
 <?php
-    require("../config.php");
+    require_once("../config.php");
     if(empty($_SESSION['user']))
     {
         header("Location: ../index.html");

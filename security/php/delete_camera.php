@@ -1,5 +1,5 @@
 <?php
-    require("../config.php");
+    require_once("../config.php");
     if(!empty($_POST))
     {
        // Add ticket to database

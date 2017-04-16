@@ -1,6 +1,6 @@
 <?php
-    require("../config.php");
-    require("../basicFunctions.php");
+    require_once("../config.php");
+    require_once("../basicFunctions.php");
 	doLogInCheck();
 
     //Get Num Tickets
