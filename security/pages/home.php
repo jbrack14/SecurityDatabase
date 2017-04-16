@@ -3,14 +3,6 @@
     require("../basicFunctions.php");
 	doLogInCheck();
 
-
-	if(isSuperUser($_SESSION['User_UUID']))
-	{
-		header("Location: ../pages/super_home.php");
-		die("Redirecting to: ../pages/super_home.php");
-	}
-
-
     //Get Num Tickets
     $query = "
         SELECT
@@ -63,9 +55,7 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_shifts = $shifts->rowCount();
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -77,7 +67,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Security Officer - Dashboard</title>
+    <title>Security Supervisor Terminal</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -116,17 +106,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Security Officer Terminal</a>
+                <a class="navbar-brand" href="home.php">Security Officer Terminal</a>
             </div>
             <!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
+                <!-- /.dropdown -->
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <li><a href="super_user.php"><i class="fa fa-user fa-fw"></i> User Profile</a>
                         </li>
                         <li class="divider"></li>
                         <li><a href="../php/logout.php"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
@@ -155,15 +146,31 @@
                         <li>
                             <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
+                        <?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                         <li>
-                            <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
+                            <a href="officers.php"><i class="fa fa-id-badge fa-fw"></i> Officers</a>
                         </li>
+                        <?php } ?>
+                        <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
+                        <li>
+                            <a href="super_user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
+                        </li>
+                        <?php } else { ?>
+                          <li>
+                              <a href="user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
+                          </li>
+                        <?php } ?>
                         <li>
                             <a href="alarms.php"><i class="fa fa-exclamation-triangle fa-fw"></i> Alarms</a>
                         </li>
                         <li>
                             <a href="tickets.php"><i class="fa fa-ticket fa-fw"></i> Tickets</a>
                         </li>
+                        <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
+                        <li>
+                            <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
+                        </li>
+                        <?php } ?>
                         <li>
                             <a href="buildings.php"><i class="fa fa-building fa-fw"></i> Buildings</a>
                         </li>
@@ -203,7 +210,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="alarms.php">
+                        <a href="#">
                             <div class="panel-footer">
                                 <span class="pull-left">View Details</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -242,6 +249,7 @@
                                     <i class="fa fa-film fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
+                                    <div class="huge">12</div>
                                     <div>View Surveillance Video</div>
                                 </div>
                             </div>
@@ -255,71 +263,94 @@
                         </a>
                     </div>
                 </div>
+                <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-group fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div>Manage Shifts</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="shifts.php">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <?php } ?>
             </div>
             <!-- /.row -->
             <div class="row">
-                <div class="col-lg-9">
-                  <div class="panel panel-default">
-                      <div class="panel-heading">
-                          <i class="fa fa-bar-chart-o fa-fw"></i> Your Shifts
-                      </div>
-                      <!-- /.panel-heading -->
-                      <div class="panel-body">
-                        <table width="100%" class="table table-striped table-bordered table-hover" id="shifts_table">
-                            <thead>
-                                <tr class="warning">
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
-                                    <th>Spots</th>
-                                    <th>Duration</th>
-                                    <th>Date Created</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              <?php while($row = $shifts->fetch()) { ?>
-                                <tr class="warning">
-                                  <td><?php echo $row['Start_Time']; ?></td>
-                                  <td><?php echo $row['End_Time']; ?></td>
-                                  <td><?php
-                                  $query = "
-                                      SELECT
-                                          Coverage_Description
-                                      FROM Spot as S
-                                      WHERE S.Spot_UUID IN
-                                      (SELECT Spot_UUID
-                                      FROM Spot_Assignment
-                                      WHERE Shift_UUID = :shift)
-                                  ";
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Your Shifts
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                          <table width="100%" class="table table-striped table-bordered table-hover" id="shifts_table">
+                              <thead>
+                                  <tr class="warning">
+                                      <th>Start Time</th>
+                                      <th>End Time</th>
+                                      <th>Spots</th>
+                                      <th>Duration</th>
+                                      <th>Date Created</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                <?php while($row = $shifts->fetch()) { ?>
+                                  <tr class="warning">
+                                    <td><?php echo $row['Start_Time']; ?></td>
+                                    <td><?php echo $row['End_Time']; ?></td>
+                                    <td><?php
+                                    $query = "
+                                        SELECT
+                                            Coverage_Description
+                                        FROM Spot as S
+                                        WHERE S.Spot_UUID IN
+                                        (SELECT Spot_UUID
+                                        FROM Spot_Assignment
+                                        WHERE Shift_UUID = :shift)
+                                    ";
 
-                                  $query_params = array(
-                                      ':shift' => $row['Shift_UUID']
-                                  );
+                                    $query_params = array(
+                                        ':shift' => $row['Shift_UUID']
+                                    );
 
-                                  try{
-                                      $spots = $db->prepare($query);
-                                      $result = $spots->execute($query_params);
-                                      $spots->setFetchMode(PDO::FETCH_ASSOC);
-                                  }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }?>
-                                  <ul>
-                                  <?php while($spot_row = $spots->fetch()) { ?>
-                                  <li>
-                                  <?php echo $spot_row['Coverage_Description']; ?>
-                                  </li>
-                                  <?php }?>
-                                  </ul>
-                                  </td>
-                                  <td><?php echo ($row['Duration_s']/3600); ?></td>
-                                  <td><?php echo $row['Created_Time']; ?></td>
-                                </tr>
-                                <?php } ?>
-                            <tbody>
-                          </table>
-                      </div>
-                      <!-- /.panel-body -->
-                  </div>
-                  <!-- /.panel -->
+                                    try{
+                                        $spots = $db->prepare($query);
+                                        $result = $spots->execute($query_params);
+                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }?>
+                                    <ul>
+                                    <?php while($spot_row = $spots->fetch()) { ?>
+                                    <li>
+                                    <?php echo $spot_row['Coverage_Description']; ?>
+                                    </li>
+                                    <?php }?>
+                                    </ul>
+                                    </td>
+                                    <td><?php echo ($row['Duration_s']/3600); ?></td>
+                                    <td><?php echo $row['Created_Time']; ?></td>
+                                  </tr>
+                                  <?php } ?>
+                              <tbody>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
                     <!-- /.panel -->
+                </div>
                 <!-- /.col-lg-4 -->
             </div>
             <!-- /.row -->

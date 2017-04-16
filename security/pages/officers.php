@@ -8,50 +8,48 @@
         SELECT
           *
         FROM Security_Officer
-        WHERE
-        Super_SSN = :ssn
+        WHERE Super_SSN = null
         ORDER BY Last_Name
     ";
 
-    $query_params = array(
-        ':ssn' => getUserSSN()
-    );
-
     try{
         $supervisees = $db->prepare($query);
-        $result = $supervisees->execute($query_params);
+        $result = $supervisees->execute();
         $supervisees->setFetchMode(PDO::FETCH_ASSOC);
-        $supervisees2 = $db->prepare($query);
-        $result = $supervisees2->execute($query_params);
-        $supervisees2->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-    $num_supervisees = $supervisees->rowCount();
 
-    //Get Shifts
+    //Get officers
+    $query = "
+        SELECT
+          *
+        FROM Security_Officer
+        WHERE Super_SSN = null
+        ORDER BY Last_Name
+    ";
+
+    try{
+        $officers = $db->prepare($query);
+        $result = $officers->execute();
+        $officers->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+
+    //Get Supervisors
     $query = "
         SELECT
             *
-        FROM Shift_Assignment AS S INNER JOIN Security_Officer AS O ON S.Officer_SSN = O.SSN
-        WHERE
-        S.Officer_SSN IN
-        (SELECT
-            SSN
         FROM Security_Officer
-        WHERE Super_SSN = :ssn)
+        WHERE
+        Super_SSN = null
     ";
 
-    $query_params = array(
-        ':ssn' => getUserSSN()
-    );
-
     try{
-        $shifts = $db->prepare($query);
-        $result = $shifts->execute($query_params);
-        $shifts->setFetchMode(PDO::FETCH_ASSOC);
+        $supers = $db->prepare($query);
+        $result = $supers->execute();
+        $supers->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-    $num_shifts = $shifts->rowCount();
 ?>
 
 <!DOCTYPE html>
@@ -101,7 +99,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="home.php">Security Officer Terminal</a>
+                <a class="navbar-brand" href="home.php">System Administrator Terminal</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -172,7 +170,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Shift Management</h1>
+                    <h1 class="page-header">Officer Management</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -181,7 +179,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Supervisees</h4><b>
+                            <h4><b>Officers</h4><b>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -190,7 +188,8 @@
                                     <th>First Name</th>
                                     <th>Phone Number</th>
                                     <th>Email</th>
-                                    <th>Shifts</th>
+                                    <th>Address</th>
+                                    <th>Supervisor</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -200,28 +199,27 @@
                                   <td><?php echo $row['First_Name']; ?></td>
                                   <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
                                   <td><?php echo $row['Email']; ?></td>
+                                  <td><?php echo $row['Address'];  ?></td>
                                   <td><?php
 
                                   $query = "
                                       SELECT
                                         *
-                                      FROM Shift_Assignment
+                                      FROM Security_Officer
                                       WHERE
                                       Officer_SSN = :ssn
                                   ";
 
                                   $query_params = array(
-                                      ':ssn' => $row['SSN']
+                                      ':ssn' => $row['Super_SSN']
                                   );
 
                                   try{
-                                      $supervisee_shifts = $db->prepare($query);
-                                      $result = $supervisee_shifts->execute($query_params);
-                                      $supervisee_shifts->setFetchMode(PDO::FETCH_ASSOC);
+                                      $supervisor = $db->prepare($query);
+                                      $result = $supervisor->execute($query_params);
                                   }
                                   catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                  $num_supervisee_shifts = $supervisee_shifts->rowCount();
-                                  echo $num_supervisee_shifts; ?></td>
+                                  echo $row['First_Name']; ?> <?php echo $row['Last_Name']; ?></td>
                                 </tr>
                                 <?php } ?>
                             <tbody>
@@ -230,56 +228,48 @@
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>All Shifts</b></h4>
-                            There are currently <b> <?php echo $num_shifts ?> </b> shifts under your management.
+                            <h4><b>Supervisors</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
-                                    <th>Spots</th>
-                                    <th></th>
+                                    <th>Phone Number</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
+                                    <th>Supervisees</th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $shifts->fetch()) { ?>
+                              <?php while($row = $supers->fetch()) { ?>
                                 <tr>
-                                  <td><?php echo $row['Start_Time']; ?></td>
-                                  <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
+                                  <td><?php echo $row['Phone_Number']; ?></td>
+                                  <td><?php echo $row['Email']; ?></td>
+                                  <td><?php echo $row['Address']; ?></td>
                                   <td><ul><?php $query = "
                                         SELECT
                                           *
-                                        FROM Spot AS sp NATURAL JOIN Spot_Assignment AS sa
-                                        WHERE sa.Shift_UUID = :shift_uuid
+                                        FROM Security_Officer
+                                        WHERE Super_SSN = :ssn
                                     ";
 
                                     $query_params = array(
-                                      ':shift_uuid' => $row['Shift_UUID']
+                                      ':ssn' => $row['SSN']
                                     );
 
                                     try{
-                                        $spots = $db->prepare($query);
-                                        $result = $spots->execute($query_params);
-                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                        $supervs = $db->prepare($query);
+                                        $result = $supervs->execute($query_params);
+                                        $supervs->setFetchMode(PDO::FETCH_ASSOC);
                                     }
                                     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                    while($row2 = $spots->fetch()) { ?>
-                                      <li><?php echo $row2['Coverage_Description']; ?></li>
+                                    while($row2 = $supervs->fetch()) { ?>
+                                      <li><?php echo $row2['First_Name']; ?> <?php echo $row2['Last_Name']; ?></li>
                                     <?php } ?>
                                   </ul>
-                                </td>
-                                <td>
-                                  <form action="../php/delete_shift.php" method="post" role="form" data-toggle="validator">
-                                    <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['Shift_UUID']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-danger"> Delete </button>
-                                    </div>
-                                  </form>
                                 </td>
                               <?php } ?>
                             <tbody>

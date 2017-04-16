@@ -108,7 +108,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="super_home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <li>
                             <a href="super_user.php"><i class="fa fa-user fa-fw"></i> Profile</a>
