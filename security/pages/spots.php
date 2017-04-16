@@ -259,14 +259,14 @@
                                       $result = $cameras->execute($query_params);
                                       $cameras->setFetchMode(PDO::FETCH_ASSOC);
                                   }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
-                                  while($row2 = $cameras->fetch()) {?>
-                                    <table>
-                                    <tr><td><?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?></td><td><?php echo array_slice($row2['Camera_UID'], -4)?></td>
-                                    </tr>
-                                    </table>
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }?>
+                                  <ul>
+                                  <?php while($row2 = $cameras->fetch()) {?>
+                                    <li>
+                                    <?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?> (<?php echo substr($row2['Camera_UID'], -4)?>)
+                                    </li>
                                   <?php } ?>
+                                  </ul>
                                   </td>
                                 </tr>
                                 <?php } ?>
@@ -285,6 +285,7 @@
                                     <th>Street</th>
                                     <th>Coverage Description</th>
                                     <th>Shifts</th>
+                                    <th>Cameras</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -360,14 +361,14 @@
                                       $result = $cameras->execute($query_params);
                                       $cameras->setFetchMode(PDO::FETCH_ASSOC);
                                   }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
-                                  while($row2 = $cameras->fetch()) {?>
-                                    <table>
-                                    <tr><td><?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?></td><td><?php echo array_slice($row2['Camera_UID'], -4)?></td>
-                                    </tr>
-                                    </table>
+                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }?>
+                                  <ul>
+                                  <?php while($row2 = $cameras->fetch()) {?>
+                                  <li>
+                                    <?php echo $row2['Brand']; ?> - <?php echo $row2['Model'];?> (<?php echo substr($row2['Camera_UID'], -4)?>)
+                                  </li>
                                   <?php } ?>
+                                  </ul>
                                   </td>
                                 </tr>
                                 <?php } ?>
