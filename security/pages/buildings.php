@@ -2,6 +2,12 @@
     require("../config.php");
     require("../basicFunctions.php");
 	doLogInCheck();
+	
+	if(!isSuperUser($_SESSION['User_UUID']))
+	{
+		header("Location: home.php");
+        die("You don't have the privilege to view this page! Redirecting to home.php");
+	}
 
     //Get Buildings
     $query = "
