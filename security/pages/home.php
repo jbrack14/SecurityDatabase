@@ -148,7 +148,7 @@
                         </li>
                         <?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                         <li>
-                            <a href="officers.php"><i class="fa fa-id-badge fa-fw"></i> Officers</a>
+                            <a href="officers.php"><i class="fa fa-users fa-fw"></i> Officers</a>
                         </li>
                         <?php } ?>
                         <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
@@ -168,7 +168,7 @@
                         </li>
                         <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
                         <li>
-                            <a href="shifts.php"><i class="fa fa-users fa-fw"></i> Shifts</a>
+                            <a href="shifts.php"><i class="fa fa-calendar fa-fw"></i> Shifts</a>
                         </li>
                         <?php } ?>
                         <li>
