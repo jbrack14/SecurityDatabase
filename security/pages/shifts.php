@@ -198,7 +198,7 @@
                                 <tr>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
-                                  <td><?php echo $row['Phone_Number']; ?></td>
+                                  <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php
 
