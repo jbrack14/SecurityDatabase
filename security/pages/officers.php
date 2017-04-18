@@ -203,7 +203,7 @@
                         <div class="panel-heading">
                             <h4><b>Officers</h4><b>
                         </div>
-                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example" style="font-size: 12px;">
                             <thead>
                                 <tr>
                                     <th>Last Name</th>
@@ -250,7 +250,7 @@
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
                                         <div>
-                                            <select class="form-control" id="super" name="super">
+                                            <select style="font-size: 12px;" class="form-control" id="super" name="super">
                                               <?php if($row2) { ?>
                                               <option value="<?php echo $row2['SSN']; ?>" selected disabled><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
                                               <?php } else {?>
@@ -267,7 +267,7 @@
                                   </td>
                                   <td><?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                                     <div cass="form-group">
-                                      <select class="form-control" id="status" name="status">
+                                      <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                         <option value="<?php echo $row['Status']; ?>" selected disabled><?php echo $row['Status']; ?></option>
                                         <option value="ACTIVE">ACTIVE</option>
                                         <option value="INACTIVE">INACTIVE</option>
@@ -316,7 +316,7 @@
                                 <tr>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
-                                  <td><?php echo $row['Phone_Number']; ?></td>
+                                  <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Address']; ?></td>
                                   <td><ul><?php $query = "
