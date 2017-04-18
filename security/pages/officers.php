@@ -1,6 +1,6 @@
 <?php
-    require_once("../config.php");
-    require_once("../basicFunctions.php");
+    require("../config.php");
+    require("../basicFunctions.php");
 	doLogInCheck();
 
     //Get Supervisees
@@ -212,6 +212,7 @@
                                     <th>Email</th>
                                     <th>Address</th>
                                     <th>Supervisor</th>
+                                    <th>Status</th>
                                     <th></th>
                                     <th></th>
                                 </tr>
@@ -263,6 +264,17 @@
                                             </select>
                                         </div>
                                     </div>
+                                  </td>
+                                  <td><?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
+                                    <div cass="form-group">
+                                      <select class="form-control" id="status" name="status">
+                                        <option value="<?php echo $row['Status']; ?>" selected disabled><?php echo $row['Status']; ?></option>
+                                        <option value="ACTIVE">ACTIVE</option>
+                                        <option value="INACTIVE">INACTIVE</option>
+                                        <option value="RETIRED">RETIRED</option>
+                                      </select>
+                                    </div>
+                                    <?php } else { echo $row['Status']; } ?>
                                   </td>
                                   <td>
                                       <div class="form-group">

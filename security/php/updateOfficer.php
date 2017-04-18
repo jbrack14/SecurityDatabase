@@ -8,13 +8,15 @@
         $query = "
         UPDATE Security_Officer
           SET
-            Super_SSN = :ssn
+            Super_SSN = :ssn,
+            Status = :status
           WHERE
           SSN = :off_ssn
         ";
 
         $query_params = array(
             ':ssn' => $_POST['super'],
+            ':status' => $_POST['status'],
             ':off_ssn' => $_POST['off_ssn']
         );
 
