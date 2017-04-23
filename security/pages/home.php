@@ -144,7 +144,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                         <li>
@@ -213,7 +213,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
+                        <a href="alarms.php">
                             <div class="panel-footer">
                                 <span class="pull-left">View Details</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -257,7 +257,7 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="#">
+                        <a href="videos.php">
                             <div class="panel-footer">
                                 <span class="pull-left">View Details</span>
                                 <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>

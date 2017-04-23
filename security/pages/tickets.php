@@ -121,7 +121,7 @@
                             <!-- /input-group -->
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                            <a href="home.php"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         <?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                         <li>
@@ -189,8 +189,7 @@
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th class="col-md-4">Description</th>
-                                    <th>Time Started</th>
-                                    <th>Time Finished</th>
+                                    <th>Time</th>
                                     <th class="col-md-4">Result</th>
                                     <th></th>
                                 </tr>
@@ -205,10 +204,19 @@
                                   <td><?php echo $row['Phone_Num']; ?></td>
                                   <td class="col-md-4"><?php echo $row['Description'];?></td>
                                   <td>
-                                    <input class="form-control" name="start" id="start" type="time" value="" required>
-                                  </td>
-                                  <td>
-                                    <input class="form-control" name="end" id="end" type="time" value="" required>
+                                    <div class="row">
+                                    <label class="col-md-2 control-label">Start:</label>
+                                    <div class="col-md-10">
+                                      <input class="form-control col-md-2" name="start" id="start" type="datetime-local" value="" required>
+                                    </div>
+                                    <br><br>
+                                    </div>
+                                    <div class="row">
+                                    <label class="col-md-2 control-label">End:</label>
+                                    <div class="col-md-10">
+                                      <input class="form-control col-md-2" name="end" id="end" type="datetime-local" value="" required>
+                                    </div>
+                                    </div>
                                   </td>
                                   <td class="col-md-4">
                                     <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
