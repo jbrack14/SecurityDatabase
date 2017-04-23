@@ -128,7 +128,35 @@
 
 	function isSysAdmin($UserUUID)
 	{
-		//TODO: We need admin account in the future.
-		return true;
+		global $db;
+
+    $query = "
+		SELECT 1
+		FROM System_Administrator
+    WHERE Officer_SSN = :ssn
+		";
+
+    $query_params = array(
+			':ssn' => getUserSSN()
+		);
+
+    try
+		{
+			$stmt = $db->prepare($query);
+			$qResult = $stmt->execute($query_params);
+		}
+    	catch(PDOException $ex)
+		{
+			die("Failed to run query: " . $ex->getMessage());
+		}
+
+    $result = false;
+		if($stmt->fetch())
+		{
+		  $result = true;
+		}
+
+		return $result;
+
 	}
 ?>

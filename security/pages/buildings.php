@@ -208,7 +208,7 @@
                                   <td><form action="../php/delete_building.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Name']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-danger"> Delete </button>
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                     </div>
                                   </form></td>
                                 </tr>

@@ -3,12 +3,12 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
-    //Get Num Tickets
+    //Get Number Unresolved Tickets
     $query = "
         SELECT
             *
         FROM Ticket
-        ORDER BY Time_Created
+        WHERE Result IS NULL
     ";
 
     try{
@@ -253,7 +253,7 @@
                                 </div>
                                 <div class="col-xs-9 text-right">
                                     <div class="huge">12</div>
-                                    <div>View Surveillance Video</div>
+                                    <div>Surveillance Videos</div>
                                 </div>
                             </div>
                         </div>

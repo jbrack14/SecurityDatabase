@@ -180,6 +180,7 @@
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr>
+                                    <th>ID Number</th>
                                     <th>Brand</th>
                                     <th>Model</th>
                                     <th>Serial Number</th>
@@ -191,6 +192,7 @@
                             <tbody>
                               <?php while($row = $cameras->fetch()) { ?>
                                 <tr>
+                                  <td><?php echo $row['Camera_UID']; ?></td>
                                   <td><?php echo $row['Brand']; ?></td>
                                   <td><?php echo $row['Model']; ?></td>
                                   <td><?php echo $row['Serial_Num']; ?></td>
@@ -216,7 +218,7 @@
                                   <td><form action="../php/delete_camera.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Camera_UID']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-danger"> Delete </button>
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                     </div>
                                   </form></td>
                                 </tr>
@@ -252,9 +254,12 @@
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Resolution:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="width" id="width" type="text" placeholder="Width" required>
-                              <input class="form-control" name="height" id="height" type="text"  placeholder="Height" required>
+                            <div class="col-lg-3">
+                              <div class="input-group">
+                                  <input class="form-control" name="width" id="width" type="text" placeholder="Width" required>
+                                  <div class="input-group-addon">X</div>
+                                  <input class="form-control" name="height" id="height" type="text"  placeholder="Height" required>
+                              </div>
                             </div>
                           </div>
                           <div class="form-group">
