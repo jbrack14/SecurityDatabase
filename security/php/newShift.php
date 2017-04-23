@@ -2,7 +2,7 @@
     require_once("../config.php");
     if(!empty($_POST))
     {
-        // Add ticket to database
+        // Add shift to database
         $query = "
             INSERT INTO Shift_Assignment (
                 Start_Time,

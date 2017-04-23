@@ -3,21 +3,36 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
-    //Get Unresolved Alarm Alerts
+    //Get Unresolved Tickets
     $query = "
         SELECT
             *
         FROM Ticket
-        ORDER BY Time_Created
+        WHERE Result IS NULL
     ";
 
     try{
-        $tickets = $db->prepare($query);
-        $result = $tickets->execute();
-        $tickets->setFetchMode(PDO::FETCH_ASSOC);
+        $unresolved = $db->prepare($query);
+        $result = $unresolved->execute();
+        $unresolved->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-    $num_tickets = $tickets->rowCount();
+    $num_unresolved = $unresolved->rowCount();
+
+    //Get Resolved Tickets
+    $query = "
+        SELECT
+            *
+        FROM Ticket
+        WHERE Result IS NOT NULL
+    ";
+
+    try{
+        $resolved = $db->prepare($query);
+        $result = $resolved->execute();
+        $resolved->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
 ?>
 
@@ -142,6 +157,9 @@
                         <li>
                             <a href="cameras.php"><i class="fa fa-camera fa-fw"></i> Cameras</a>
                         </li>
+                        <li>
+                            <a href="videos.php"><i class="fa fa-film fa-fw"></i> Videos</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -159,9 +177,9 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="panel panel-info">
+                    <div class="panel panel-danger">
                         <div class="panel-heading">
-                            There are currently <b><?php echo $num_tickets?></b> tickets.
+                            There are currently <b><?php echo $num_unresolved?></b> unresolved tickets.
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -169,22 +187,39 @@
                                     <th>Time Created</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Description</th>
+                                    <th>Phone</th>
+                                    <th class="col-md-4">Description</th>
+                                    <th>Time Started</th>
+                                    <th>Time Finished</th>
+                                    <th class="col-md-4">Result</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $tickets->fetch()) { ?>
+                              <?php while($row = $unresolved->fetch()) { ?>
                                 <tr>
+                                  <form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
                                   <td><?php echo $row['Time_Created']; ?></td>
                                   <td><?php echo $row['Name']; ?></td>
                                   <td><?php echo $row['Email']; ?></td>
-                                  <td><?php echo $row['Description'];?></td>
-                                  <td><form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
+                                  <td><?php echo $row['Phone_Num']; ?></td>
+                                  <td class="col-md-4"><?php echo $row['Description'];?></td>
+                                  <td>
+                                    <input class="form-control" name="start" id="start" type="time" value="" required>
+                                  </td>
+                                  <td>
+                                    <input class="form-control" name="end" id="end" type="time" value="" required>
+                                  </td>
+                                  <td class="col-md-4">
+                                    <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
+                                  </td>
+                                  <td>
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Ticket_UUID']; ?>" name="resolve" id="resolve">
                                       <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
                                     </div>
                                   </td>
+                                </form>
                                 </tr>
                                 <?php } ?>
                             <tbody>
@@ -195,6 +230,47 @@
                   </div>
                     <!-- /.panel -->
                 </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                Resolved Tickets
+                            </div>
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>Time Created</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Description</th>
+                                        <th>Time Started</th>
+                                        <th>Time Finished</th>
+                                        <th>Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <?php while($row = $resolved->fetch()) { ?>
+                                    <tr>
+                                      <td><?php echo $row['Time_Created']; ?></td>
+                                      <td><?php echo $row['Name']; ?></td>
+                                      <td><?php echo $row['Email']; ?></td>
+                                      <td><?php echo $row['Phone_Num'];?></td>
+                                      <td><?php echo $row['Description'];?></td>
+                                      <td><?php echo $row['Start_Time'];?></td>
+                                      <td><?php echo $row['End_Time'];?></td>
+                                      <td><?php echo $row['Result'];?></td>
+                                    </tr>
+                                    <?php } ?>
+                                <tbody>
+                              </table>
+                        </div>
+
+                        <hr>
+                      </div>
+                        <!-- /.panel -->
+                    </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->

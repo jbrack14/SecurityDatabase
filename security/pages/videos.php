@@ -3,31 +3,18 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
-    //Get Buildings
+    //Get All Videos
     $query = "
         SELECT
-          *
-        FROM Camera
+          Start_Time, Resolution_Height, Resolution_Width, Duration_us, Record_UUID
+        FROM Surveillance_Video
+        ORDER BY Start_Time
     ";
 
     try{
-        $cameras = $db->prepare($query);
-        $result = $cameras->execute();
-        $cameras->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
-    //Get Spots
-    $query = "
-        SELECT
-          *
-        FROM Spot
-    ";
-
-    try{
-        $spots = $db->prepare($query);
-        $result = $spots->execute();
-        $spots->setFetchMode(PDO::FETCH_ASSOC);
+        $videos = $db->prepare($query);
+        $result = $videos->execute();
+        $videos->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 ?>
@@ -166,7 +153,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Building Management</h1>
+                    <h1 class="page-header">Surveillance Video Terminal</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -180,31 +167,32 @@
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr>
-                                    <th>Brand</th>
-                                    <th>Model</th>
-                                    <th>Serial Number</th>
-                                    <th>Resolution Width</th>
-                                    <th>Resolution Height</th>
+                                    <th></th>
+                                    <th>Start Time</th>
+                                    <th>Duration</th>
                                     <th>Spot</th>
+                                    <th>Resolution</th>
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $cameras->fetch()) { ?>
+                              <?php while($row = $videos->fetch()) { ?>
                                 <tr>
-                                  <td><?php echo $row['Brand']; ?></td>
-                                  <td><?php echo $row['Model']; ?></td>
-                                  <td><?php echo $row['Serial_Num']; ?></td>
-                                  <td><?php echo $row['Resolution_Width']; ?></td>
-                                  <td><?php echo $row['Resolution_Height']; ?></td>
+                                  <td><?php echo $row['Thumbnail'];?></td>
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['Duration_us']; ?></td>
                                   <td><?php  $query = "
                                         SELECT
                                           Coverage_Description
                                         FROM Spot
                                         WHERE
-                                        Spot_UUID = :spot                                    ";
+                                        Spot_UUID = (
+                                          SELECT Spot_UUID
+                                          FROM Camera
+                                          WHERE Camera_UID = :camera
+                                          )                                  ";
 
                                     $query_params = array(
-                                        ':spot' => $row['Spot_UUID']
+                                        ':camera' => $row['Camera_UID']
                                     );
 
                                     try{
@@ -213,72 +201,59 @@
                                     }
                                     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                     echo implode(', ', $spot->fetch())?>
+                                  </td>
+                                  <td><?php echo $row['Resolution_Height']; ?> x <?php echo $row['Resolution_Height']; ?></td>
                                   <td><form action="../php/delete_camera.php" method="post" role="form" data-toggle="validator">
-                                    <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['Camera_UID']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-danger"> Delete </button>
+                                    <div class="col-sm-8 col-sm-offset-2 video-link medium-paragraph">
+                                        <a href="#" class="launch-modal" data-modal-id="modal-video">
+                                            <span class="video-link-icon"><i class="fa fa-play"></i></span>
+                                            <span class="video-link-text">Launch modal video</span>
+                                        </a>
                                     </div>
-                                  </form></td>
+                                  </form>
+                                  </td>
                                 </tr>
+                                <div class="modal fade" id="modal-video" tabindex="-1" role="dialog" aria-labelledby="modal-video-label">
+                                  <div class="modal-dialog" role="document">
+                                      <div class="modal-content">
+                                          <div class="modal-header">
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                              </button>
+                                          </div>
+                                          <div class="modal-body">
+                                              <div class="modal-video">
+                                                <div content="Content-Type: video/mp4">
+                                                    <video width="<?php echo $row['Resolution_Width']; ?>" height="<?php echo $row['Resolution_Height']; ?>" controls="controls" poster="image" preload="metadata">
+                                                      <?php  $query = "
+                                                            SELECT
+                                                              Video_Data
+                                                            FROM Surveillance_Video
+                                                            WHERE
+                                                            Record_UUID = :record                          ";
+
+                                                        $query_params = array(
+                                                            ':record' => $row['Record_UUID']
+                                                        );
+
+                                                        try{
+                                                            $video = $db->prepare($query);
+                                                            $result = $video->execute($query_params);
+                                                        }
+                                                        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                                        ?>
+                                                        <source src="<?php echo $video->fetch(PDO::FETCH_COLUMN); ?>" type="video/mp4"/>;
+                                                    </video>
+                                                </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                                </div>
                                 <?php } ?>
                             <tbody>
                           </table>
                     </div>
-
-                    <div class="panel panel-info">
-                        <div class="panel-success">
-                          <div class="panel-heading">
-                              <h4><b>Add New Camera</b></h4>
-                          </div>
-                          <br>
-                        <form class="form-horizontal" action="../php/newCamera.php" method="post" role="form">
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Brand:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="brand" id="brand" type="text" value="" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Model:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="model" id="model" type="text" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">S/N:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="sn" id="sn" type="text" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Resolution:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="width" id="width" type="text" placeholder="Width" required>
-                              <input class="form-control" name="height" id="height" type="text"  placeholder="Height" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Spot:</label>
-                            <div class="col-lg-8">
-                              <label for="spot">Select a Spot:</label>
-                                <select class="form-control" id="spot" name="spot">
-                                  <?php while($row = $spots->fetch()) { ?>
-                                    <option value="<?php echo $row['Spot_UUID'] ?>"><?php echo $row['Coverage_Description'] ?></option>
-                                  <?php } ?>
-                                </select>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-md-2 control-label"></label>
-                            <div class="col-md-8">
-                              <input type="submit" class="btn btn-primary" value="Create Camera">
-                            </div>
-                          </div>
-                        </form>
-                    <hr>
-                  </div>
-                    <!-- /.panel -->
-                </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->

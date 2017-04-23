@@ -182,6 +182,9 @@
                         <li>
                             <a href="cameras.php"><i class="fa fa-camera fa-fw"></i> Cameras</a>
                         </li>
+                        <li>
+                            <a href="videos.php"><i class="fa fa-film fa-fw"></i> Videos</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->

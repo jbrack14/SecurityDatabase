@@ -175,6 +175,9 @@
                         <li>
                             <a href="cameras.php"><i class="fa fa-camera fa-fw"></i> Cameras</a>
                         </li>
+                        <li>
+                            <a href="videos.php"><i class="fa fa-film fa-fw"></i> Videos</a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -309,13 +312,13 @@
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Start Time:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="start" id="start" type="time" value="<?php echo $profile['First_Name'] ?>" required>
+                              <input class="form-control" name="start" id="start" type="datetime-local" value="<?php echo $profile['First_Name'] ?>" required>
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">End Time:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="end" id="end" type="time" value="<?php echo $profile['Last_Name'] ?>" required>
+                              <input class="form-control" name="end" id="end" type="datetime-local" value value="<?php echo $profile['Last_Name'] ?>" required>
                             </div>
                           </div>
                           <div class="form-group">
