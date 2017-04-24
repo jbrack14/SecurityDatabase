@@ -198,6 +198,47 @@
                                   </form>
                                   </td>
                                 </tr>
+                                <div class="modal fade" id="myModal" role="dialog">
+                                  <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Modal Header</h4>
+                                      </div>
+                                      <div class="modal-body">
+                                        <?php
+
+                                          $query = "
+                                                SELECT
+                                                  Video_Data, Video_Format, Resolution_Height, Resolution_Width
+                                                FROM Surveillance_Video
+                                                WHERE
+                                                Record_UUID = :record
+                                            ";
+
+                                            $query_params = array(
+                                                ':record' => $row['Record_UUID']
+                                            );
+
+                                            try{
+                                                $spot = $db->prepare($query);
+                                                $result = $spot->execute($query_params);
+                                            }
+                                            catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                            $video = $spot->fetch();
+                                            ?>
+                                            <video width="100%" height="" controls>
+                                                <?php echo '<source src="data:image/png;base64,'.base64_encode($video['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
+                                              Your browser does not support HTML5 video.
+                                            </video>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                </div>
+                              </div>
                                 <?php } ?>
                             </tbody>
                           </table>
@@ -207,49 +248,7 @@
             <!-- /.row -->
         </div>
 
-        <div class="modal fade" id="myModal" role="dialog">
-          <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Modal Header</h4>
-              </div>
-              <div class="modal-body">
-                <input type="hidden" name="recId" id="recId" value=""/>
-                <?php
-                  $record_uuid = $_POST['recId'];
 
-                  $query = "
-                        SELECT
-                          Video_Data, Video_Format, Resolution_Height, Resolution_Width
-                        FROM Surveillance_Video
-                        WHERE
-                        Record_UUID = :record
-                    ";
-
-                    $query_params = array(
-                        ':record' => $record_uuid
-                    );
-
-                    try{
-                        $spot = $db->prepare($query);
-                        $result = $spot->execute($query_params);
-                    }
-                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                    $video = $spot->fetch();
-                    ?>
-                    <video width="<?php echo $video['Resolution_Width']; ?>" height="<?php echo $video['Resolution_Height']; ?>" controls>
-                        <?php echo '<source src="data:image/png;base64,'.base64_encode($row['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
-                      Your browser does not support HTML5 video.
-                    </video>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-        </div>
-      </div>
         <!-- /#page-wrapper -->
 
     </div>
