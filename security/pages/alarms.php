@@ -6,9 +6,10 @@
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description        FROM Alarm_Event NATURAL JOIN Spot
+          *
+        FROM Alarm_Event NATURAL JOIN Spot
         WHERE
-        Resolved_Time = null
+        Alarm_Event.Resolved_Time IS NULL
         ORDER BY Start_Time
     ";
 
@@ -23,10 +24,10 @@
     //Get Unresolved Alarm Alerts
     $query = "
         SELECT
-            Alarm_Event_UUID, Start_Time, End_Time, Spot_UUID, Coverage_Description
+          *
         FROM Alarm_Event NATURAL JOIN Spot
         WHERE
-        NOT Resolved_Time = null
+        NOT Resolved_Time IS NULL
         ORDER BY Start_Time
     ";
 
@@ -176,29 +177,48 @@
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr class="danger">
-                                    <th>Alarm ID</th>
-                                    <th>Spot ID</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
                                     <th>Spot Description</th>
+                                    <th>Related Videos</th>
                                     <th> </th>
                                 </tr>
                             </thead>
                             <tbody>
                               <?php while($row = $unresolved->fetch()) { ?>
                                 <tr class="danger">
-                                  <td><?php echo $row['Alarm_Event_UUID'];?></td>
-                                  <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
+                                  <td><?php
+                                      $query = "
+                                      SELECT
+                                        Thumbnail, Video_Data
+                                      FROM Surveillance_Video NATURAL JOIN (Camera INNER JOIN Spot ON Camera.Spot_UUID = Spot.Spot_UUID)
+                                      WHERE
+                                      Spot.Spot_UUID = :uuid
+                                      AND timestampdiff(SECOND, :AlarmStartTime, Surveillance_Video.Start_Time) >= 0
+                                      AND timestampdiff(SECOND, Surveillance_Video.Start_Time, :AlarmEndTime) >= 0;
+                                      ";
+
+                                      $query_params = 
+
+                                      try{
+                                          $spots = $db->prepare($query);
+                                          $result = $spots->execute($query_params);
+                                          $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                      }
+                                      catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                      while($row = $spots->fetch()) { ?>
+                                        <option value="<?php echo $row['Spot_UUID']?>"><?php echo $row['Coverage_Description'] ?></option>
+                                  <?php } ?>
                                   <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="resolve" id="resolve">
                                       <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-success" value="Resolve">
                                     </div></td>
                                 </tr>
-                                <?php } ?>
+                              <?php } ?>
                             <tbody>
                           </table>
                     </div>

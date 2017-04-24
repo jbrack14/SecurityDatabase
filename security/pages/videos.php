@@ -6,7 +6,7 @@
     //Get All Videos
     $query = "
         SELECT
-          Start_Time, Resolution_Height, Resolution_Width, Duration_us, Record_UUID
+          Thumbnail, Start_Time, End_Time, Duration_us, Resolution_Height, Resolution_Width, Video_Format, Record_UUID, Camera_UID
         FROM Surveillance_Video
         ORDER BY Start_Time
     ";
@@ -166,7 +166,9 @@
                             <tbody>
                               <?php while($row = $videos->fetch()) { ?>
                                 <tr>
-                                  <td><?php echo $row['Thumbnail'];?></td>
+                                  <td>
+                                      <?php echo '<img height="50" width="50" src="data:image/png;base64,'.base64_encode($row['Thumbnail']).'"/>'; ?>
+                                  </td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['Duration_us']; ?></td>
                                   <td><?php  $query = "
@@ -191,62 +193,63 @@
                                     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                     echo implode(', ', $spot->fetch())?>
                                   </td>
-                                  <td><?php echo $row['Resolution_Height']; ?> x <?php echo $row['Resolution_Height']; ?></td>
-                                  <td><form action="../php/delete_camera.php" method="post" role="form" data-toggle="validator">
-                                    <div class="col-sm-8 col-sm-offset-2 video-link medium-paragraph">
-                                        <a href="#" class="launch-modal" data-modal-id="modal-video">
-                                            <span class="video-link-icon"><i class="fa fa-play"></i></span>
-                                            <span class="video-link-text">Launch modal video</span>
-                                        </a>
-                                    </div>
+                                  <td><?php echo $row['Resolution_Width']; ?> x <?php echo $row['Resolution_Height']; ?></td>
+                                  <td><button type="button" value="<?php echo $row['Record_UUID']; ?>" id="play" class="play-button btn btn-info btn-md" data-toggle="modal" data-target="#myModal"><i class="fa fa-play fa-fw"></i> Play Video</button>
                                   </form>
                                   </td>
                                 </tr>
-                                <div class="modal fade" id="modal-video" tabindex="-1" role="dialog" aria-labelledby="modal-video-label">
-                                  <div class="modal-dialog" role="document">
-                                      <div class="modal-content">
-                                          <div class="modal-header">
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                  <span aria-hidden="true">&times;</span>
-                                              </button>
-                                          </div>
-                                          <div class="modal-body">
-                                              <div class="modal-video">
-                                                <div content="Content-Type: video/mp4">
-                                                    <video width="<?php echo $row['Resolution_Width']; ?>" height="<?php echo $row['Resolution_Height']; ?>" controls="controls" poster="image" preload="metadata">
-                                                      <?php  $query = "
-                                                            SELECT
-                                                              Video_Data
-                                                            FROM Surveillance_Video
-                                                            WHERE
-                                                            Record_UUID = :record                          ";
-
-                                                        $query_params = array(
-                                                            ':record' => $row['Record_UUID']
-                                                        );
-
-                                                        try{
-                                                            $video = $db->prepare($query);
-                                                            $result = $video->execute($query_params);
-                                                        }
-                                                        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                                        ?>
-                                                        <source src="<?php echo $video->fetch(PDO::FETCH_COLUMN); ?>" type="video/mp4"/>;
-                                                    </video>
-                                                </div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                                </div>
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
         </div>
+
+        <div class="modal fade" id="myModal" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" name="recId" id="recId" value=""/>
+                <?php
+                  $record_uuid = $_POST['recId'];
+
+                  $query = "
+                        SELECT
+                          Video_Data, Video_Format, Resolution_Height, Resolution_Width
+                        FROM Surveillance_Video
+                        WHERE
+                        Record_UUID = :record
+                    ";
+
+                    $query_params = array(
+                        ':record' => $record_uuid
+                    );
+
+                    try{
+                        $spot = $db->prepare($query);
+                        $result = $spot->execute($query_params);
+                    }
+                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                    $video = $spot->fetch();
+                    ?>
+                    <video width="<?php echo $video['Resolution_Width']; ?>" height="<?php echo $video['Resolution_Height']; ?>" controls>
+                        <?php echo '<source src="data:image/png;base64,'.base64_encode($row['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
+                      Your browser does not support HTML5 video.
+                    </video>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+        </div>
+      </div>
         <!-- /#page-wrapper -->
 
     </div>
@@ -263,6 +266,9 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+
+    <!-- Videos Specific JavaScript -->
+    <script src="../js/videos.js"></script>
 
 </body>
 
