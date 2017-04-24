@@ -68,7 +68,7 @@
         if($row){ $is_super = true; }
 
 
-    // Add row to database
+    // Add account to database
         $query = "
             INSERT INTO User_Accounts (
                 username,

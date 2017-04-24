@@ -258,7 +258,7 @@
                                   <td><?php echo $row['First_Name']; ?></td>
                                   <td><ul><?php $query = "
                                         SELECT
-                                          *
+                                          Coverage_Description
                                         FROM Spot AS sp NATURAL JOIN Spot_Assignment AS sa
                                         WHERE sa.Shift_UUID = :shift_uuid
                                     ";

@@ -17,30 +17,6 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-    //Get Shifts
-    $query = "
-        SELECT
-            *
-        FROM Shift_Assignment AS S INNER JOIN Security_Officer AS O ON S.Officer_SSN = O.SSN
-        WHERE
-        S.Officer_SSN IN
-        (SELECT
-            SSN
-        FROM Security_Officer
-        WHERE Super_SSN = :ssn)
-    ";
-
-    $query_params = array(
-        ':ssn' => getUserSSN()
-    );
-
-    try{
-        $shifts = $db->prepare($query);
-        $result = $shifts->execute($query_params);
-        $shifts->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-    $num_shifts = $shifts->rowCount();
 ?>
 
 <!DOCTYPE html>
