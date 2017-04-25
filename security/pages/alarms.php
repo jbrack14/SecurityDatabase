@@ -9,7 +9,7 @@
           *
         FROM Alarm_Event NATURAL JOIN Spot
         WHERE
-        Alarm_Event.Resolved_Time IS NULL
+        Resolved_Time IS NULL
         ORDER BY Start_Time
     ";
 
@@ -21,7 +21,7 @@
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_unresolved_alarms = $unresolved->rowCount();
 
-    //Get Unresolved Alarm Alerts
+    //Get resolved Alarm Alerts
     $query = "
         SELECT
           *
@@ -201,7 +201,11 @@
                                       AND timestampdiff(SECOND, Surveillance_Video.Start_Time, :AlarmEndTime) >= 0;
                                       ";
 
-                                      $query_params = 
+                                      $query_params = array(
+                                          ':uuid' => $row['Spot_UUID'],
+                                          ':AlarmStartTime' => $row["Start_Time"],
+                                          ':AlarmEndTime' => $row['End_Time']
+                                      );
 
                                       try{
                                           $spots = $db->prepare($query);
@@ -215,7 +219,7 @@
                                   <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="resolve" id="resolve">
-                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-success" value="Resolve">
+                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-sm btn-success" value="Resolve">
                                     </div></td>
                                 </tr>
                               <?php } ?>
@@ -230,8 +234,6 @@
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr class="success">
-                                    <th>Alarm ID</th>
-                                    <th>Spot ID</th>
                                     <th>Start Time</th>
                                     <th>End Time</th>
                                     <th>Resolved Time</th>
@@ -241,8 +243,6 @@
                             <tbody>
                               <?php while($row = $resolved->fetch()) { ?>
                                 <tr class="success">
-                                  <td><?php echo $row['Alarm_Event_UUID']; ?></td>
-                                  <td><?php echo $row['Spot_ID']; ?></td>
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Resolved_Time']; ?></td>

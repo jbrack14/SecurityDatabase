@@ -5,7 +5,7 @@
         // Resolve Ticket
         $query = "
             UPDATE Alarm_Event
-            SET Resolved_Time = CURRENT_TIMESTAMP
+            SET Resolved_Time = NOW()
             WHERE Alarm_Event_UUID = :uuid
         ";
 
@@ -19,7 +19,7 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-        header("Location: ../pages/tickets.php");
-        die("Redirecting to: ../pages/tickets.php");
+        header("Location: ../pages/alarms.php");
+        die("Redirecting to: ../pages/alarms.php");
     }
 ?>
