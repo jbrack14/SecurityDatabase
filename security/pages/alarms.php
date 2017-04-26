@@ -174,6 +174,9 @@
                         <div class="panel-heading">
                             There are currently <b><?php echo $num_unresolved_alarms?></b> unresolved alarms.
                         </div>
+                        <div class="panel-info">
+                            Related videos:
+                        </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr class="danger">
@@ -236,7 +239,7 @@
                                 </td>
                                 </tr>
                               <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
 

@@ -30,7 +30,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Camera Management System</title>
+    <title>Surveillance Video Terminal</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -151,7 +151,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Cameras</h4><b>
+                            <h4><b>Surveillance Video</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -194,61 +194,68 @@
                                     echo implode(', ', $spot->fetch())?>
                                   </td>
                                   <td><?php echo $row['Resolution_Width']; ?> x <?php echo $row['Resolution_Height']; ?></td>
-                                  <td><button type="button" value="<?php echo $row['Record_UUID']; ?>" id="play" class="play-button btn btn-info btn-md" data-toggle="modal" data-target="#myModal"><i class="fa fa-play fa-fw"></i> Play Video</button>
-                                  </form>
+                                  <td>
+                                    <form action="../php/showVideo.php" method="post" role="form" data-toggle="validator">
+                                        <div class="form-group">
+                                        <button type="submit" value="<?php echo $row['Record_UUID']; ?>" name="video_uuid" id="play" class="play-button btn btn-info btn-md"><i class="fa fa-play fa-fw"></i> Play Video</button>
+                                        </div>
+                                    </form>
                                   </td>
                                 </tr>
-                                <div class="modal fade" id="myModal" role="dialog">
-                                  <div class="modal-dialog">
-                                    <!-- Modal content-->
-                                    <div class="modal-content">
-                                      <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">Modal Header</h4>
-                                      </div>
-                                      <div class="modal-body">
-                                        <?php
-
-                                          $query = "
-                                                SELECT
-                                                  Video_Data, Video_Format, Resolution_Height, Resolution_Width
-                                                FROM Surveillance_Video
-                                                WHERE
-                                                Record_UUID = :record
-                                            ";
-
+                                
+                                <?php } ?>
+                            </tbody>
+                          </table>
+                          	<?php if(!empty($_SESSION['video_page_video_uuid'])) {?>
+							<!-- Modal content-->
+                            <div class="modal fade" id="myModal" role="dialog">
+                            	<div class="modal-dialog">
+                                	<div class="modal-content">
+                                    	<div class="modal-header">
+                                        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        	<h4 class="modal-title">Video</h4>
+                                    	</div>
+                                    	<div class="modal-body">
+                                        	<?php
+											$query = "
+												SELECT
+												  Video_Data, Video_Format, Resolution_Height, Resolution_Width
+												FROM Surveillance_Video
+												WHERE
+												Record_UUID = :record
+											";
+											
                                             $query_params = array(
-                                                ':record' => $row['Record_UUID']
+                                                ':record' => $_SESSION['video_page_video_uuid']
                                             );
-
+											
                                             try{
                                                 $spot = $db->prepare($query);
                                                 $result = $spot->execute($query_params);
                                             }
                                             catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                             $video = $spot->fetch();
-                                            ?>
+                                        	?>
                                             <video width="100%" height="" controls>
-                                                <?php echo '<source src="data:image/png;base64,'.base64_encode($video['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
-                                              Your browser does not support HTML5 video.
+                                            <?php echo '<source src="data:image/png;base64,'.base64_encode($video['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
+                                             Your browser does not support HTML5 video.
                                             </video>
-                                      </div>
-                                      <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                      </div>
+										</div>
+                                        <div class="modal-footer">
+                                        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                        </div>
                                     </div>
                                 </div>
-                              </div>
-                                <?php } ?>
-                            </tbody>
-                          </table>
+                            </div>
+                            <!-- /Modal content-->
+                            <?php } ?>
                     </div>
+                    <!-- /.panel-info -->
+                </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
         </div>
-
-
         <!-- /#page-wrapper -->
 
     </div>
@@ -265,10 +272,22 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-
-    <!-- Videos Specific JavaScript -->
-    <script src="../js/videos.js"></script>
+    
+    <?php if(!empty($_SESSION['video_page_video_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#myModal').modal('show');
+	});
+	</script>
+    <?php } ?>
 
 </body>
 
 </html>
+<?php 
+if(!empty($_SESSION['video_page_video_uuid'])) 
+{
+	unset($_SESSION['video_page_video_uuid']);
+}
+?>
