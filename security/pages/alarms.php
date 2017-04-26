@@ -38,6 +38,84 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_resolved_alarms = $resolved->rowCount();
+	
+	if(!empty($_SESSION['alarms_page_alarm_uuid']))
+	{
+		$query = "
+			SELECT
+			  Start_Time, End_Time, Spot_UUID
+			FROM Alarm_Event
+			WHERE
+			  Alarm_Event_UUID = :alarm_uuid
+		";
+		$query_params = array(
+		  ':alarm_uuid' => $_SESSION['alarms_page_alarm_uuid']
+		);
+		try{
+			$selectedAlarm = $db->prepare($query);
+			$result = $selectedAlarm->execute($query_params);
+			$selectedAlarm->setFetchMode(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		
+		if(!($selectedAlarmRow = $selectedAlarm->fetch()))
+		{
+			unset($_SESSION['video_page_alarm_uuid']);
+			header("Location: ../pages/alarms.php");
+			die("Redirecting to: ../pages/alarms.php");
+		}
+		
+		$query = "
+		SELECT
+				S.Thumbnail, S.Start_Time, S.End_Time, S.Duration_us, S.Resolution_Height, S.Resolution_Width, S.Video_Format, S.Record_UUID, S.Camera_UID
+		FROM Surveillance_Video AS S inner join (Camera natural join Spot) on Camera.Camera_UID = S.Camera_UID
+		WHERE
+		Spot.Spot_UUID = :uuid
+		AND ( 
+			(timestampdiff(SECOND, :AlarmStartTime, S.Start_Time) >= 0
+				AND timestampdiff(SECOND, S.Start_Time, :AlarmEndTime) >= 0)
+			OR (timestampdiff(SECOND, :AlarmStartTime, S.End_Time) >= 0
+				AND timestampdiff(SECOND, S.End_Time, :AlarmEndTime) >= 0)
+			OR (timestampdiff(SECOND, S.Start_Time, :AlarmStartTime) >= 0
+				AND timestampdiff(SECOND, :AlarmEndTime, S.End_Time) >= 0)
+		);
+		";
+
+		$query_params = array(
+		  ':uuid' => $selectedAlarmRow['Spot_UUID'],
+		  ':AlarmStartTime' => $selectedAlarmRow["Start_Time"],
+		  ':AlarmEndTime' => $selectedAlarmRow['End_Time']
+		);
+		
+		try{
+			$relatedVideo = $db->prepare($query);
+			$result = $relatedVideo->execute($query_params);
+			$relatedVideo->setFetchMode(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		
+	}
+	else if(!empty($_SESSION['alarms_page_video_uuid']))
+	{
+		$query = "
+		SELECT
+			Video_Data, Video_Format, Resolution_Height, Resolution_Width
+		FROM Surveillance_Video
+		WHERE
+			Record_UUID = :record
+		";
+		
+		$query_params = array(
+			':record' => $_SESSION['alarms_page_video_uuid']
+		);
+		
+		try{
+			$video = $db->prepare($query);
+			$result = $video->execute($query_params);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		$videoRow = $video->fetch();
+	}
 ?>
 
 <!DOCTYPE html>
@@ -174,9 +252,6 @@
                         <div class="panel-heading">
                             There are currently <b><?php echo $num_unresolved_alarms?></b> unresolved alarms.
                         </div>
-                        <div class="panel-info">
-                            Related videos:
-                        </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
                                 <tr class="danger">
@@ -197,7 +272,7 @@
 									<?php
                                       $query = "
 									SELECT
-											Record_UUID, Thumbnail
+											COUNT(*) AS Video_Num
 									FROM Surveillance_Video inner join (Camera natural join Spot) on Camera.Camera_UID = Surveillance_Video.Camera_UID
 									WHERE
 									Spot.Spot_UUID = :uuid
@@ -219,15 +294,19 @@
 
 									try
 									{
-									  $spots = $db->prepare($query);
-									  $result = $spots->execute($query_params);
-									  $spots->setFetchMode(PDO::FETCH_ASSOC);
+									  $relatedVideoCount = $db->prepare($query);
+									  $result = $relatedVideoCount->execute($query_params);
+									  $relatedVideoCount->setFetchMode(PDO::FETCH_ASSOC);
 									}
 									catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-									
-									while($videoRow = $spots->fetch()) { ?>
-									<option value="<?php echo $videoRow['Record_UUID']?>"><?php echo $videoRow['Record_UUID'] ?></option>
-									<?php } ?>
+									$relatedVideoCountRow = $relatedVideoCount->fetch();
+									echo $relatedVideoCountRow['Video_Num'] . " Video(s).";
+									?>
+                                    <form action="../php/showAlarmRelatedVideo.php" method="post" role="form" data-toggle="validator">
+                                        <div class="form-group">
+                                        	<button type="submit" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="alarm_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
+                                        </div>
+                                    </form>
 								</td>
                                 <td>
                                 	<form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
@@ -281,7 +360,102 @@
 
     </div>
     <!-- /#wrapper -->
-
+    <?php if(!empty($_SESSION['alarms_page_alarm_uuid'])) { ?>
+    <!-- Modal content 1-->
+    <div class="modal fade" id="relatedVideoModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Related Videos</h4>
+                </div>
+                <div class="modal-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Start Time</th>
+                                <th>Duration</th>
+                                <th>Spot</th>
+                                <th>Resolution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+							<?php while($relatedVideoRow = $relatedVideo->fetch()) { ?>
+                            <tr>
+                                <td>
+                                <?php echo '<img height="50" width="50" src="data:image/png;base64,'.base64_encode($relatedVideoRow['Thumbnail']).'"/>'; ?>
+                                </td>
+                                <td><?php echo $relatedVideoRow['Start_Time']; ?></td>
+                                <td><?php echo $relatedVideoRow['Duration_us']; ?></td>
+                                <td><?php  $query = "
+									SELECT
+										Coverage_Description
+									FROM Spot
+									WHERE
+										Spot_UUID = (
+										SELECT Spot_UUID
+										FROM Camera
+										WHERE Camera_UID = :camera
+										)
+									";
+									
+									$query_params = array(
+									':camera' => $relatedVideoRow['Camera_UID']
+									);
+									
+									try{
+									$spot = $db->prepare($query);
+									$result = $spot->execute($query_params);
+									}
+									catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+									echo implode(', ', $spot->fetch())?>
+                                </td>
+                                <td><?php echo $relatedVideoRow['Resolution_Width']; ?> x <?php echo $relatedVideoRow['Resolution_Height']; ?></td>
+                                <td>
+                                    <form action="../php/showAlarmRelatedVideo.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                    	<button type="submit" value="<?php echo $relatedVideoRow['Record_UUID']; ?>" name="video_uuid" id="play" class="play-button btn btn-info btn-md"><i class="fa fa-play fa-fw"></i> Play Video</button>
+                                    </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal content 1-->
+	<?php } else if(!empty($_SESSION['alarms_page_video_uuid'])) { ?>
+    <!-- Modal content 2-->
+    <div class="modal fade" id="playingVideoModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Playing Video</h4>
+                </div>
+                <div class="modal-body">
+                    <video width="100%" height="" controls>
+                    	<?php echo '<source src="data:image/png;base64,'.base64_encode($videoRow['Video_Data']).'" type="video/'.$videoRow['Video_Format'].'"  />'; ?>
+                    	Your browser does not support HTML5 video.
+                    </video>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal content 2-->
+	<?php } ?>
+    
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
 
@@ -293,7 +467,34 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-
+    
+	<?php if(!empty($_SESSION['alarms_page_alarm_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#relatedVideoModal').modal('show');
+	});
+	</script>
+    <?php } else if(!empty($_SESSION['alarms_page_video_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#playingVideoModal').modal('show');
+	});
+	</script>
+    <?php } ?>
 </body>
 
 </html>
+
+<?php 
+if(!empty($_SESSION['alarms_page_alarm_uuid'])) 
+{
+	unset($_SESSION['alarms_page_alarm_uuid']);
+}
+
+if(!empty($_SESSION['alarms_page_video_uuid'])) 
+{
+	unset($_SESSION['alarms_page_video_uuid']);
+}
+?>
