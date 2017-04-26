@@ -190,37 +190,50 @@
                                   <td><?php echo $row['Start_Time']; ?></td>
                                   <td><?php echo $row['End_Time']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
-                                  <td><?php
+								  <td>
+									<?php
                                       $query = "
-                                      SELECT
-                                        Thumbnail, Video_Data
-                                      FROM Surveillance_Video NATURAL JOIN (Camera INNER JOIN Spot ON Camera.Spot_UUID = Spot.Spot_UUID)
-                                      WHERE
-                                      Spot.Spot_UUID = :uuid
-                                      AND timestampdiff(SECOND, :AlarmStartTime, Surveillance_Video.Start_Time) >= 0
-                                      AND timestampdiff(SECOND, Surveillance_Video.Start_Time, :AlarmEndTime) >= 0;
-                                      ";
+									SELECT
+											Record_UUID, Thumbnail
+									FROM Surveillance_Video inner join (Camera natural join Spot) on Camera.Camera_UID = Surveillance_Video.Camera_UID
+									WHERE
+									Spot.Spot_UUID = :uuid
+									AND ( 
+										(timestampdiff(SECOND, :AlarmStartTime, Surveillance_Video.Start_Time) >= 0
+											AND timestampdiff(SECOND, Surveillance_Video.Start_Time, :AlarmEndTime) >= 0)
+										OR (timestampdiff(SECOND, :AlarmStartTime, Surveillance_Video.End_Time) >= 0
+											AND timestampdiff(SECOND, Surveillance_Video.End_Time, :AlarmEndTime) >= 0)
+										OR (timestampdiff(SECOND, Surveillance_Video.Start_Time, :AlarmStartTime) >= 0
+											AND timestampdiff(SECOND, :AlarmEndTime, Surveillance_Video.End_Time) >= 0)
+									);
+									";
 
-                                      $query_params = array(
-                                          ':uuid' => $row['Spot_UUID'],
-                                          ':AlarmStartTime' => $row["Start_Time"],
-                                          ':AlarmEndTime' => $row['End_Time']
-                                      );
+									$query_params = array(
+									  ':uuid' => $row['Spot_UUID'],
+									  ':AlarmStartTime' => $row["Start_Time"],
+									  ':AlarmEndTime' => $row['End_Time']
+									);
 
-                                      try{
-                                          $spots = $db->prepare($query);
-                                          $result = $spots->execute($query_params);
-                                          $spots->setFetchMode(PDO::FETCH_ASSOC);
-                                      }
-                                      catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                      while($row = $spots->fetch()) { ?>
-                                        <option value="<?php echo $row['Spot_UUID']?>"><?php echo $row['Coverage_Description'] ?></option>
-                                  <?php } ?>
-                                  <td><form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
+									try
+									{
+									  $spots = $db->prepare($query);
+									  $result = $spots->execute($query_params);
+									  $spots->setFetchMode(PDO::FETCH_ASSOC);
+									}
+									catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+									
+									while($videoRow = $spots->fetch()) { ?>
+									<option value="<?php echo $videoRow['Record_UUID']?>"><?php echo $videoRow['Record_UUID'] ?></option>
+									<?php } ?>
+								</td>
+                                <td>
+                                	<form action="../php/resolve_alarm.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="resolve" id="resolve">
-                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-sm btn-success" value="Resolve">
-                                    </div></td>
+                                        <input type="hidden" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="resolve" id="resolve">
+                                        <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-sm btn-success" value="Resolve">
+                                    </div>
+                                    </form>
+                                </td>
                                 </tr>
                               <?php } ?>
                             <tbody>

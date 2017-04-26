@@ -1,6 +1,6 @@
 <?php
     require_once("../config.php");
-    if(!empty($_POST))
+    if(!empty($_POST) && !empty($_POST['resolve']))
     {
         // Resolve Ticket
         $query = "
@@ -19,7 +19,7 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-        header("Location: ../pages/alarms.php");
-        die("Redirecting to: ../pages/alarms.php");
     }
+	header("Location: ../pages/alarms.php");
+	die("Redirecting to: ../pages/alarms.php");
 ?>
