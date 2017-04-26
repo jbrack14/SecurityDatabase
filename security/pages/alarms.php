@@ -322,6 +322,8 @@
                           </table>
                     </div>
 
+                    <hr>
+                    
                     <div class="panel panel-success">
                         <div class="panel-heading">
                             There are currently <b><?php echo $num_resolved_alarms?></b> resolved alarms.
@@ -347,9 +349,6 @@
                             <tbody>
                           </table>
                     </div>
-
-                    <hr>
-                  </div>
                     <!-- /.panel -->
                 </div>
                 <!-- /.col-lg-12 -->
