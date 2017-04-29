@@ -2,23 +2,7 @@
     require("../config.php");
     require("../basicFunctions.php");
 	doLogInCheck();
-
-    //Get Supervisees
-    $query = "
-        SELECT
-          *
-        FROM Security_Officer
-        WHERE Super_SSN IS NOT NULL
-        ORDER BY Last_Name
-    ";
-
-    try{
-        $supervisees = $db->prepare($query);
-        $result = $supervisees->execute();
-        $supervisees->setFetchMode(PDO::FETCH_ASSOC);
-    }
-    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
+	
     //Get officers
     $query = "
         SELECT
@@ -31,10 +15,7 @@
         $officers = $db->prepare($query);
         $result = $officers->execute();
         $officers->setFetchMode(PDO::FETCH_ASSOC);
-        $officers2 = $db->prepare($query);
-        $result2 = $officers2->execute();
-        $officers2->setFetchMode(PDO::FETCH_ASSOC);
-		$row3All = $officers2->fetchAll();
+		$officerList = $officers->fetchAll();
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
@@ -44,7 +25,9 @@
             *
         FROM Security_Officer
         WHERE
-        Super_SSN IS NULL
+         (Super_SSN IS NULL)
+		OR 
+		 (SSN IN (SELECT DISTINCT Super_SSN FROM Security_Officer))
     ";
 
     try{
@@ -209,28 +192,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $officers->fetch()) { ?>
-								  <?php
-                                  $query = "
-                                      SELECT
-                                        Last_Name, First_Name, SSN
-                                      FROM Security_Officer
-                                      WHERE
-                                      SSN = :ssn
-                                  ";
-
-                                  $query_params = array(
-                                      ':ssn' => $row['Super_SSN']
-                                  );
-
-                                  try{
-                                      $supervisor = $db->prepare($query);
-                                      $result = $supervisor->execute($query_params);
-                                  }
-                                  catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                  $row2 = $supervisor->fetch();
-                                  ?>
-
+                              <?php foreach($officerList as $row) { ?>
                                 <tr>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
@@ -244,42 +206,44 @@
                                         <div>
                                         	<b>Supervisor:</b>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
-                                                <?php
-                                                foreach($row3All as $row3) { ?>
-                                                <option value="<?php echo $row3['SSN']; ?>" <?php if($row2 && $row3['SSN']==$row2['SSN']){echo "selected";} ?> ><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
+                                                <?php 
+                                                foreach($officerList as $row3) { ?>
+                                                <option value="<?php echo $row3['SSN']; ?>" <?php if($row3['SSN']==$row['Super_SSN']){echo "selected";} ?> ><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
                                                 <?php } ?>
-                                                <option value="" <?php if(!($row2)){echo "selected";} ?> >None</option>
+                                                <option value="" <?php if(empty($row['Super_SSN']) ){echo "selected";} ?> >None</option>
                                             </select>
                                         </div>
-
+                                        
                                         <b>Status:</b>
                                         <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                             <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
                                             <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
                                             <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
                                         </select>
-
+                                        
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                     </form>
                                   </td>
                                   <td>
-
+                                  
                                     <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
                                       <div class="form-group">
                                         <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                       </div>
                                     </form>
-
+                                    
                                   </td>
                                 </tr>
-
+                                
                                 <?php } ?>
                             </tbody>
                           </table>
                     </div>
-
+                    
+                    <hr>
+                    
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h4><b>Supervisors</b></h4>
@@ -306,15 +270,15 @@
                                     <td>
                                         <ul><?php $query = "
                                             SELECT
-                                              *
+                                              First_Name, Last_Name 
                                             FROM Security_Officer
                                             WHERE Super_SSN = :ssn
                                         ";
-
+                                        
                                         $query_params = array(
                                           ':ssn' => $row['SSN']
                                         );
-
+                                        
                                         try{
                                             $supervs = $db->prepare($query);
                                             $result = $supervs->execute($query_params);
@@ -329,13 +293,15 @@
                                  </tr>
                               <?php } ?>
                             </tbody>
-                          </table>
+                         </table>
                     </div>
-
+                    
+                    <hr>
+                    
                     <div class="panel panel-info">
                         <div class="panel-success">
                           <div class="panel-heading">
-                              <h4><b>Create New Shift</b></h4>
+                              <h4><b>Add New Officer</b></h4>
                           </div>
                           <br>
                         <form class="form-horizontal" data-toggle="validator" action="../php/newOfficer.php" method="post" role="form">
@@ -380,9 +346,8 @@
                             <div class="col-lg-8">
                               <label for="super">Select an Officer:</label>
                                 <select class="form-control" id="super" name="super">
-                                  <?php $result = $officers->execute();
-                                  $officers->setFetchMode(PDO::FETCH_ASSOC);
-                                  while($row = $officers->fetch()) { ?>
+                                  <?php 
+                                  foreach($officerList as $row) { ?>
                                     <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
                                   <?php } ?>
                                 </select>
@@ -395,7 +360,7 @@
                             </div>
                           </div>
                         </form>
-                    <hr>
+                    
                   </div>
                     <!-- /.panel -->
                 </div>
