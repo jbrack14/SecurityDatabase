@@ -1,6 +1,7 @@
 <?php
     require("../config.php");
-    if(!empty($_POST))
+    if(!empty($_POST)
+	&& !empty($_POST['delete']) )
     {
        // Add ticket to database
         $query = "
@@ -17,8 +18,8 @@
             $result = $stmt->execute($query_params);
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
-        header("Location: ../pages/officers.php");
-        die("Redirecting to: ../pages/officers.php");
     }
+	
+	header("Location: ../pages/officers.php");
+	die("Redirecting to: ../pages/officers.php");
 ?>

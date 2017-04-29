@@ -1,6 +1,12 @@
 <?php
     require("../config.php");
-    if(!empty($_POST))
+    if(!empty($_POST)
+	&& !empty($_POST['ssn'])
+	&& !empty($_POST['first'])
+	&& !empty($_POST['last'])
+	&& !empty($_POST['email'])
+	&& !empty($_POST['phone'])
+	&& !empty($_POST['address']) )
     {
         // Add building to database
         $query = "
@@ -15,14 +21,20 @@
             ) VALUES (
                 :ssn,
                 :first,
-				        :last,
+				:last,
                 :email,
                 :phone,
                 :address,
                 :super
             )
         ";
-
+		
+		$superSSN = NULL;
+		if(!empty($_POST['super']))
+		{
+			$superSSN = $_POST['super'];
+		}
+		
         $query_params = array(
             ':ssn' => $_POST['ssn'],
             ':first' => $_POST['first'],
@@ -30,16 +42,16 @@
             ':email' => $_POST['email'],
             ':phone' => $_POST['phone'],
             ':address' => $_POST['address'],
-            ':super' => $_POST['super']
+            ':super' => $superSSN
         );
-
+		
         try {
             $stmt = $db->prepare($query);
             $result = $stmt->execute($query_params);
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
-        header("Location: ../pages/officers.php");
-        die("Redirecting to: ../pages/officers.php");
     }
+
+	header("Location: ../pages/officers.php");
+	die("Redirecting to: ../pages/officers.php");
 ?>

@@ -12,30 +12,18 @@
           WHERE
           SSN = :off_ssn
         ";
-
+		
+		$superSSN = NULL;
+		if(empty($_POST['super']))
+		{
+			$superSSN = $_POST['super'];
+		}
+        
         $query_params = array(
-            ':ssn' => $_POST['super'],
+            ':ssn' => $superSSN,
             ':status' => $_POST['status'],
             ':off_ssn' => $_POST['off_ssn']
         );
-		
-		if(empty($_POST['super']))
-		{
-			$query = "
-			UPDATE Security_Officer
-			  SET
-				Super_SSN = null,
-				Status = :status
-			  WHERE
-			  SSN = :off_ssn
-			";
-			
-			$query_params = array(
-				':status' => $_POST['status'],
-				':off_ssn' => $_POST['off_ssn']
-			);
-		}
-        
 
         try {
             $stmt = $db->prepare($query);

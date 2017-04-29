@@ -346,10 +346,10 @@
                             <div class="col-lg-8">
                               <label for="super">Select an Officer:</label>
                                 <select class="form-control" id="super" name="super">
-                                  <?php 
-                                  foreach($officerList as $row) { ?>
+                                  <?php foreach($officerList as $row) { ?>
                                     <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
                                   <?php } ?>
+                                  <option value="" selected>None</option>
                                 </select>
                             </div>
                           </div>
@@ -360,8 +360,8 @@
                             </div>
                           </div>
                         </form>
-                    
-                  </div>
+                    	</div>
+                    </div>
                     <!-- /.panel -->
                 </div>
                 <!-- /.col-lg-12 -->
