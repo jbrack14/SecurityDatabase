@@ -8,6 +8,7 @@
         SELECT
           *
         FROM Camera
+        ORDER BY Status, Spot_UUID
     ";
 
     try{
@@ -155,7 +156,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Building Management</h1>
+                    <h1 class="page-header">Camera Management</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -176,11 +177,12 @@
                                     <th>Resolution Width</th>
                                     <th>Resolution Height</th>
                                     <th>Spot</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                               <?php while($row = $cameras->fetch()) { ?>
-                                <tr>
+                                <tr <?php if($row['Status'] == "INACTIVE") { echo 'class="danger"';}?>>
                                   <td><?php echo $row['Camera_UID']; ?></td>
                                   <td><?php echo $row['Brand']; ?></td>
                                   <td><?php echo $row['Model']; ?></td>
@@ -204,12 +206,39 @@
                                     }
                                     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                     echo implode(', ', $spot->fetch())?>
-                                  <td><form action="../php/delete_camera.php" method="post" role="form" data-toggle="validator">
+                                  </td>
+                                  <td class="col-md-2"><form action="../php/update_camera.php" method="post" role="form" data-toggle="validator">
+                                    <b>Status:</b>
+                                    <select style="font-size: 12px;" class="form-control" id="status" name="status" <?php
+                                    $query = "
+                                        SELECT
+                                          Status
+                                        FROM Spot
+                                        WHERE
+                                        Spot_UUID = :uuid
+                                    ";
+
+                                    $query_params = array(
+                                        ':uuid' => $row['Spot_UUID']
+                                    );
+
+                                    try{
+                                        $building_status = $db->prepare($query);
+                                        $result = $building_status->execute($query_params);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    $b_stat = $building_status->fetch();
+                                    if($b_stat['Status'] == "INACTIVE"){ echo "disabled";}?>
+                                    >
+                                        <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                        <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                    </select>
                                     <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['Camera_UID']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
+                                      <input type="hidden" value="<?php echo $row['Camera_UID']; ?>" name="uuid" id="uuid">
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
-                                  </form></td>
+                                  </form>
+                                  </td>
                                 </tr>
                                 <?php } ?>
                             <tbody>
