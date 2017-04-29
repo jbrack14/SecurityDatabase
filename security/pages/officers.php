@@ -34,6 +34,7 @@
         $officers2 = $db->prepare($query);
         $result2 = $officers2->execute();
         $officers2->setFetchMode(PDO::FETCH_ASSOC);
+		$row3All = $officers2->fetchAll();
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
@@ -244,19 +245,18 @@
                                         	<b>Supervisor:</b>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
                                                 <?php 
-                                                $result2 = $officers2->execute();
-                                                $officers2->setFetchMode(PDO::FETCH_ASSOC);
-                                                while($row3 = $officers2->fetch()) { ?>
+                                                foreach($row3All as $row3) { ?>
                                                 <option value="<?php echo $row3['SSN']; ?>" <?php if($row2 && $row3['SSN']==$row2['SSN']){echo "selected";} ?> ><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
                                                 <?php } ?>
                                                 <option value="" <?php if(!($row2)){echo "selected";} ?> >None</option>
                                             </select>
                                         </div>
+                                        
                                         <b>Status:</b>
                                         <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                             <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
-                                            <option value="INACTIVE"<?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
-                                            <option value="RETIRED"<?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
+                                            <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                            <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
                                         </select>
                                         
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>

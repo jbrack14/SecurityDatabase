@@ -178,7 +178,9 @@
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th class="col-md-4">Description</th>
-                                    <th>Time</th>
+                                    <th>Time Started</th>
+                                    <th>Time Finished</th>
+                                    <th>Related Videos</th>
                                     <th class="col-md-4">Result</th>
                                     <th></th>
                                 </tr>
@@ -192,21 +194,9 @@
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Phone_Num']; ?></td>
                                   <td class="col-md-4"><?php echo $row['Description'];?></td>
-                                  <td class="col-md-4">
-                                    <div class="row">
-                                    <label class="col-md-2 control-label">Start:</label>
-                                    <div class="col-md-10">
-                                      <?php echo $row['Start_Time']; ?>
-                                    </div>
-                                    <br><br>
-                                    </div>
-                                    <div class="row">
-                                    <label class="col-md-2 control-label">End:</label>
-                                    <div class="col-md-10">
-                                      <?php echo $row['End_Time']; ?>
-                                    </div>
-                                    </div>
-                                  </td>
+                                  <td><?php echo $row['Start_Time'];?></td>
+                                  <td><?php echo $row['End_Time'];?></td>
+                                  <td>    </td>
                                   <td class="col-md-4">
                                     <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
                                   </td>
