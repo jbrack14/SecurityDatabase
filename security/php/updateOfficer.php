@@ -1,10 +1,9 @@
 <?php
     require("../config.php");
     require("../basicFunctions.php");
-    if(!empty($_POST))
+    if(!empty($_POST) && (!empty($_POST['status']) && !empty($_POST['off_ssn'])))
     {
-
-        // Update Security_Officer Table
+		// Update Security_Officer Table
         $query = "
         UPDATE Security_Officer
           SET
@@ -19,6 +18,24 @@
             ':status' => $_POST['status'],
             ':off_ssn' => $_POST['off_ssn']
         );
+		
+		if(empty($_POST['super']))
+		{
+			$query = "
+			UPDATE Security_Officer
+			  SET
+				Super_SSN = null,
+				Status = :status
+			  WHERE
+			  SSN = :off_ssn
+			";
+			
+			$query_params = array(
+				':status' => $_POST['status'],
+				':off_ssn' => $_POST['off_ssn']
+			);
+		}
+        
 
         try {
             $stmt = $db->prepare($query);
@@ -26,7 +43,8 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-        header("Location: ../pages/officers.php");
-        die("Redirecting to ../pages/officers.php");
     }
+	
+	header("Location: ../pages/officers.php");
+	die("Redirecting to ../pages/officers.php");
 ?>

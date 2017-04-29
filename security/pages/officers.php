@@ -193,7 +193,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Officers</h4><b>
+                            <h4><b>Officers</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example" style="font-size: 12px;">
                             <thead>
@@ -203,22 +203,13 @@
                                     <th>Phone Number</th>
                                     <th>Email</th>
                                     <th>Address</th>
-                                    <th>Supervisor</th>
-                                    <th>Status</th>
                                     <th></th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                               <?php while($row = $officers->fetch()) { ?>
-                                <tr>
-                                  <td><?php echo $row['Last_Name']; ?></td>
-                                  <td><?php echo $row['First_Name']; ?></td>
-                                  <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
-                                  <td><?php echo $row['Email']; ?></td>
-                                  <td><?php echo $row['Address'];  ?></td>
-                                  <td><?php
-
+								  <?php
                                   $query = "
                                       SELECT
                                         Last_Name, First_Name, SSN
@@ -226,11 +217,11 @@
                                       WHERE
                                       SSN = :ssn
                                   ";
-
+    
                                   $query_params = array(
                                       ':ssn' => $row['Super_SSN']
                                   );
-
+    
                                   try{
                                       $supervisor = $db->prepare($query);
                                       $result = $supervisor->execute($query_params);
@@ -238,53 +229,54 @@
                                   catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                   $row2 = $supervisor->fetch();
                                   ?>
-                                  <form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
+                                  
+                                <tr>
+                                  <td><?php echo $row['Last_Name']; ?></td>
+                                  <td><?php echo $row['First_Name']; ?></td>
+                                  <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
+                                  <td><?php echo $row['Email']; ?></td>
+                                  <td><?php echo $row['Address'];  ?></td>
+                                  <td>
+                                    <form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
+                                        <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
                                         <div>
+                                        	<b>Supervisor:</b>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
-                                              <?php if($row2) { ?>
-                                              <option value="<?php echo $row2['SSN']; ?>" selected disabled><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
-                                              <?php } else {?>
-                                                <option value="" selected disabled>None</option>
-                                              <?php } ?>
-                                              <?php $result2 = $officers2->execute();
+                                                <?php 
+                                                $result2 = $officers2->execute();
                                                 $officers2->setFetchMode(PDO::FETCH_ASSOC);
                                                 while($row3 = $officers2->fetch()) { ?>
-                                                <option value="<?php echo $row3['SSN']; ?>"><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
-                                              <?php } ?>
+                                                <option value="<?php echo $row3['SSN']; ?>" <?php if($row2 && $row3['SSN']==$row2['SSN']){echo "selected";} ?> ><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
+                                                <?php } ?>
+                                                <option value="" <?php if(!($row2)){echo "selected";} ?> >None</option>
                                             </select>
                                         </div>
-                                    </div>
-                                  </td>
-                                  <td><?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
-                                    <div cass="form-group">
-                                      <select style="font-size: 12px;" class="form-control" id="status" name="status">
-                                        <option value="<?php echo $row['Status']; ?>" selected disabled><?php echo $row['Status']; ?></option>
-                                        <option value="ACTIVE">ACTIVE</option>
-                                        <option value="INACTIVE">INACTIVE</option>
-                                        <option value="RETIRED">RETIRED</option>
-                                      </select>
-                                    </div>
-                                    <?php } else { echo $row['Status']; } ?>
-                                  </td>
-                                  <td>
-                                      <div class="form-group">
+                                        <b>Status:</b>
+                                        <select style="font-size: 12px;" class="form-control" id="status" name="status">
+                                            <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                            <option value="INACTIVE"<?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                            <option value="RETIRED"<?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
+                                        </select>
+                                        
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
-                                      </div>
-                                  </form>
+                                    </div>
+                                    </form>
                                   </td>
                                   <td>
+                                  
                                     <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
                                       <div class="form-group">
                                         <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                       </div>
                                     </form>
+                                    
                                   </td>
                                 </tr>
+                                
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
 
@@ -311,30 +303,32 @@
                                   <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Address']; ?></td>
-                                  <td><ul><?php $query = "
-                                        SELECT
-                                          *
-                                        FROM Security_Officer
-                                        WHERE Super_SSN = :ssn
-                                    ";
-
-                                    $query_params = array(
-                                      ':ssn' => $row['SSN']
-                                    );
-
-                                    try{
-                                        $supervs = $db->prepare($query);
-                                        $result = $supervs->execute($query_params);
-                                        $supervs->setFetchMode(PDO::FETCH_ASSOC);
-                                    }
-                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                    while($row2 = $supervs->fetch()) { ?>
-                                      <li><?php echo $row2['First_Name']; ?> <?php echo $row2['Last_Name']; ?></li>
-                                    <?php } ?>
-                                  </ul>
-                                </td>
+                                    <td>
+                                        <ul><?php $query = "
+                                            SELECT
+                                              *
+                                            FROM Security_Officer
+                                            WHERE Super_SSN = :ssn
+                                        ";
+                                        
+                                        $query_params = array(
+                                          ':ssn' => $row['SSN']
+                                        );
+                                        
+                                        try{
+                                            $supervs = $db->prepare($query);
+                                            $result = $supervs->execute($query_params);
+                                            $supervs->setFetchMode(PDO::FETCH_ASSOC);
+                                        }
+                                        catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                        while($row2 = $supervs->fetch()) { ?>
+                                          <li><?php echo $row2['First_Name']; ?> <?php echo $row2['Last_Name']; ?></li>
+                                        <?php } ?>
+                                        </ul>
+                                    </td>
+                                 </tr>
                               <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
 
