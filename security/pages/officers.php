@@ -244,7 +244,7 @@
                                         <div>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
                                               <?php if($row2) { ?>
-                                              <option value="<?php echo $row2['SSN']; ?>" selected disabled><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
+                                              <option value="<?php echo $row2['SSN']; ?>"><?php echo $row2['Last_Name']; ?>, <?php echo $row2['First_Name'] ?></option>
                                               <?php } else {?>
                                                 <option value="" selected disabled>None</option>
                                               <?php } ?>
@@ -260,7 +260,7 @@
                                   <td><?php if(isSysAdmin($_SESSION['User_UUID'])) { ?>
                                     <div cass="form-group">
                                       <select style="font-size: 12px;" class="form-control" id="status" name="status">
-                                        <option value="<?php echo $row['Status']; ?>" selected disabled><?php echo $row['Status']; ?></option>
+                                        <option value="<?php echo $row['Status']; ?>"><?php echo $row['Status']; ?></option>
                                         <option value="ACTIVE">ACTIVE</option>
                                         <option value="INACTIVE">INACTIVE</option>
                                         <option value="RETIRED">RETIRED</option>
