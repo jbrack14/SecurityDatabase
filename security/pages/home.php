@@ -241,7 +241,6 @@
                                     <i class="fa fa-film fa-5x"></i>
                                 </div>
                                 <div class="col-xs-9 text-right">
-                                    <div class="huge">12</div>
                                     <div>Surveillance Videos</div>
                                 </div>
                             </div>

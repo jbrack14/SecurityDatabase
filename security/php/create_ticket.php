@@ -16,12 +16,16 @@
                 Name,
                 Email,
                 Phone_Num,
-                Description
+                Description,
+                Start_Time,
+                End_Time
             ) VALUES (
                 :name,
                 :email,
                 :phone,
-				        :description
+				        :description,
+                :start,
+                :end
             )
         ";
 
@@ -29,7 +33,9 @@
             ':name' => $_POST['ticket_name'],
             ':email' => $_POST['ticket_email'],
             ':phone' => $_POST['ticket_phone'],
-            ':description' => $_POST['ticket_message']
+            ':description' => $_POST['ticket_message'],
+            'start' => $_POST['start'],
+            'end' => $_POST['end']
         );
 
         try {

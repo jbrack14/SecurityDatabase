@@ -192,18 +192,18 @@
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Phone_Num']; ?></td>
                                   <td class="col-md-4"><?php echo $row['Description'];?></td>
-                                  <td>
+                                  <td class="col-md-4">
                                     <div class="row">
                                     <label class="col-md-2 control-label">Start:</label>
                                     <div class="col-md-10">
-                                      <input class="form-control col-md-2" name="start" id="start" type="datetime-local" value="" required>
+                                      <?php echo $row['Start_Time']; ?>
                                     </div>
                                     <br><br>
                                     </div>
                                     <div class="row">
                                     <label class="col-md-2 control-label">End:</label>
                                     <div class="col-md-10">
-                                      <input class="form-control col-md-2" name="end" id="end" type="datetime-local" value="" required>
+                                      <?php echo $row['End_Time']; ?>
                                     </div>
                                     </div>
                                   </td>

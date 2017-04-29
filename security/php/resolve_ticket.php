@@ -6,15 +6,11 @@
         $query = "
             UPDATE Ticket
             SET
-              Start_Time = :start,
-              End_Time = :end,
               Result = :result
             WHERE Ticket_UUID = :uuid
         ";
 
         $query_params = array(
-            ':start' => $_POST['start'],
-            ':end' => $_POST['end'],
             ':result' => $_POST['result'],
             ':uuid' => $_POST['resolve']
         );

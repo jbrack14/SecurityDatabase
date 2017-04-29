@@ -113,6 +113,20 @@
                         </div>
                       </div>
 
+                      <div class="form-group">
+                        <label class="col-md-3 control-label" for="start">Start Time:</label>
+                        <div class="col-md-9">
+                          <input class="form-control col-md-9" name="start" id="start" type="datetime-local" value="" required>
+                        </div>
+                      </div>
+                      
+                      <div class="form-group">
+                        <label class="col-md-3 control-label" for="end">End Time:</label>
+                        <div class="col-md-9">
+                          <input class="form-control col-md-9" name="end" id="end" type="datetime-local" value="" required>
+                        </div>
+                      </div>
+
                       <!-- Message body -->
                       <div class="form-group">
                         <label class="col-md-3 control-label" for="ticket_message">Describe your scurity request</label>
@@ -130,6 +144,7 @@
                           <button type="submit" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#success-alert">Submit</button>
                         </div>
                       </div>
+
                     </fieldset>
                     </form>
                 </div>
