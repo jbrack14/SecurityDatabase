@@ -1,7 +1,7 @@
 <?php
     require("../config.php");
     require("../basicFunctions.php");
-    if(!empty($_POST))
+    if(!empty($_POST) && !empty($_POST['status']))
     {
 
         // Update Security_Officer Table
