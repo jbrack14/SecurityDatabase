@@ -38,7 +38,7 @@
         (SELECT
             SSN
         FROM Security_Officer
-        WHERE Super_SSN = :ssn)
+        WHERE Super_SSN = :ssn AND Start_Time > NOW())
     ";
 
     $query_params = array(
@@ -52,6 +52,30 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_shifts = $shifts->rowCount();
+
+    $query = "
+        SELECT
+            *
+        FROM Shift_Assignment AS S INNER JOIN Security_Officer AS O ON S.Officer_SSN = O.SSN
+        WHERE
+        S.Officer_SSN IN
+        (SELECT
+            SSN
+        FROM Security_Officer
+        WHERE Super_SSN = :ssn AND Start_Time < NOW())
+    ";
+
+    $query_params = array(
+        ':ssn' => getUserSSN()
+    );
+
+    try{
+        $shifts_old = $db->prepare($query);
+        $result = $shifts_old->execute($query_params);
+        $shifts_old->setFetchMode(PDO::FETCH_ASSOC);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+    $num_shifts = $num_shifts + $shifts_old->rowCount();
 ?>
 
 <!DOCTYPE html>
@@ -282,7 +306,46 @@
                                   <form action="../php/delete_shift.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Shift_UUID']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger">
+                                        <i class="fa fa-trash fa-fw"></i></button>
+                                    </div>
+                                  </form>
+                                </td>
+                              <?php } ?>
+                              <?php while($row = $shifts_old->fetch()) { ?>
+                                <tr class="warning">
+                                  <td><?php echo $row['Start_Time']; ?></td>
+                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo $row['Last_Name']; ?></td>
+                                  <td><?php echo $row['First_Name']; ?></td>
+                                  <td><ul><?php $query = "
+                                        SELECT
+                                          Coverage_Description
+                                        FROM Spot AS sp NATURAL JOIN Spot_Assignment AS sa
+                                        WHERE sa.Shift_UUID = :shift_uuid
+                                    ";
+
+                                    $query_params = array(
+                                      ':shift_uuid' => $row['Shift_UUID']
+                                    );
+
+                                    try{
+                                        $spots = $db->prepare($query);
+                                        $result = $spots->execute($query_params);
+                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    while($row2 = $spots->fetch()) { ?>
+                                      <li><?php echo $row2['Coverage_Description']; ?></li>
+                                    <?php } ?>
+                                  </ul>
+                                </td>
+                                <td>
+                                  <form action="../php/delete_shift.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Shift_UUID']; ?>" name="delete" id="delete">
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger" disabled>
+                                        <i class="fa fa-trash fa-fw"></i></button>
                                     </div>
                                   </form>
                                 </td>
