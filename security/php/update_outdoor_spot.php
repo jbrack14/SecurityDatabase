@@ -4,14 +4,14 @@
     {
        // Add ticket to database
         $query = "
-            UPDATE Building
+            UPDATE Outdoor_Spot
             SET Status = :status
-            WHERE Name = :name
+            WHERE Spot_UUID = :uuid
         ";
 
         $query_params = array(
             ':status' => $_POST['status'],
-            ':name' => $_POST['delete']
+            ':uuid' => $_POST['uuid']
         );
 
         try {
@@ -20,7 +20,7 @@
         }
         catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 
-        header("Location: ../pages/buildings.php");
-        die("Redirecting to: ../pages/buildings.php");
+        header("Location: ../pages/spots.php");
+        die("Redirecting to: ../pages/spots.php");
     }
 ?>
