@@ -8,6 +8,7 @@
         SELECT
           *
         FROM Indoor_Spot
+        ORDER BY Status, Building_Name
     ";
 
     try{
@@ -22,6 +23,7 @@
         SELECT
             *
         FROM Outdoor_Spot
+        ORDER BY Status
     ";
 
     try{
@@ -194,7 +196,7 @@
                             </thead>
                             <tbody>
                               <?php while($row = $indoor_spots->fetch()) { ?>
-                                <tr>
+                                <tr <?php if($row['Status'] == "INACTIVE"){ echo 'class="danger"'; } ?>>
                                   <td><?php echo $row['Building_Name']; ?></td>
                                   <td><?php echo $row['Floor_Num']; ?></td>
                                   <td><?php echo $row['Room_Num']; ?></td>
@@ -295,7 +297,7 @@
                             </thead>
                             <tbody>
                               <?php while($row = $outdoor_spots->fetch()) { ?>
-                                <tr>
+                                <tr <?php if($row['Status'] == "INACTIVE") { echo 'class="danger"';}?>>
                                   <td><?php echo $row['Location']; ?></td>
                                   <td><?php echo $row['Street']; ?></td>
                                   <td><?php echo $row['Coverage_Description']; ?></td>
@@ -394,7 +396,7 @@
                               <label for="name">Select a Building:</label>
                                 <select class="form-control" id="name" name="name">
                                   <?php while($row = $buildings->fetch()) { ?>
-                                    <option value="<?php echo $row['Name'] ?>"><?php echo $row['Name'] ?></option>
+                                    <option value="<?php echo $row['Name'] ?>" <?php if($row['Status'] == "INACTIVE"){ echo 'select disabled';}?>><?php echo $row['Name'] ?></option>
                                   <?php } ?>
                                 </select>
                             </div>

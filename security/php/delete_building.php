@@ -4,11 +4,13 @@
     {
        // Add ticket to database
         $query = "
-            DELETE FROM Building
+            UPDATE Building
+            SET Status = :status
             WHERE Name = :name
         ";
 
         $query_params = array(
+            ':status' => $_POST['status'],
             ':name' => $_POST['delete']
         );
 

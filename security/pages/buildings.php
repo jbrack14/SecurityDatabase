@@ -8,6 +8,7 @@
         SELECT
           *
         FROM Building
+        ORDER BY Status, Name
     ";
 
     try{
@@ -160,20 +161,25 @@
                                     <th>Number</th>
                                     <th>Street</th>
                                     <th>Zip Code</th>
-                                    <th></th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                               <?php while($row = $buildings->fetch()) { ?>
-                                <tr>
+                                <tr <?php if($row['Status'] == "INACTIVE"){ echo 'class="danger"'; } ?>>
                                   <td><?php echo $row['Name']; ?></td>
                                   <td><?php echo $row['Street_Num']; ?></td>
                                   <td><?php echo $row['Street_Name']; ?></td>
                                   <td><?php echo $row['Zip_Code']; ?></td>
                                   <td><form action="../php/delete_building.php" method="post" role="form" data-toggle="validator">
+                                    <b>Status:</b>
+                                    <select style="font-size: 12px;" class="form-control" id="status" name="status">
+                                        <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                        <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                    </select>
                                     <div class="form-group">
                                       <input type="hidden" value="<?php echo $row['Name']; ?>" name="delete" id="delete">
-                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                   </form></td>
                                 </tr>
