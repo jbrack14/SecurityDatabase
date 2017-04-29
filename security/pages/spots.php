@@ -248,7 +248,7 @@
                                     </li>
                                   <?php } ?>
                                   </td>
-                                  <td><ul><?php
+                                  <td><?php
                                   $query = "
                                       SELECT
                                         Brand, Model, Camera_UID
@@ -275,6 +275,38 @@
                                   <?php } ?>
                                   </ul>
                                   </td>
+                                  <td class="col-md-2"><form action="../php/update_spot.php" method="post" role="form" data-toggle="validator">
+                                    <b>Status:</b>
+                                    <select style="font-size: 12px;" class="form-control" id="status" name="status" <?php
+                                    $query = "
+                                        SELECT
+                                          Status
+                                        FROM Building
+                                        WHERE
+                                        Name = :name
+                                    ";
+
+                                    $query_params = array(
+                                        ':name' => $row['Building_Name']
+                                    );
+
+                                    try{
+                                        $building_status = $db->prepare($query);
+                                        $result = $building_status->execute($query_params);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    $b_stat = $building_status->fetch();
+                                    if($b_stat['Status'] == "INACTIVE"){ echo "disabled";}?>
+                                    >
+                                        <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                        <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                    </select>
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Spot_UUID']; ?>" name="uuid" id="uuid">
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
+                                    </div>
+                                  </form>
+                                  </td>
                                 </tr>
                                 <?php } ?>
                             <tbody>
@@ -293,6 +325,7 @@
                                     <th>Coverage Description</th>
                                     <th>Shifts</th>
                                     <th>Cameras</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -350,7 +383,7 @@
                                   <?php } ?>
                                 </ul>
                                   </td>
-                                  <td><ul><?php
+                                  <td><?php
                                   $query = "
                                       SELECT
                                         Brand, Model, Camera_UID
@@ -376,6 +409,18 @@
                                   </li>
                                   <?php } ?>
                                   </ul>
+                                  </td>
+                                  <td class="col-md-2"><form action="../php/update_outdoor_spot.php" method="post" role="form" data-toggle="validator">
+                                    <b>Status:</b>
+                                    <select style="font-size: 12px;" class="form-control" id="status" name="status">
+                                        <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                        <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                    </select>
+                                    <div class="form-group">
+                                      <input type="hidden" value="<?php echo $row['Spot_UUID']; ?>" name="uuid" id="uuid">
+                                      <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
+                                    </div>
+                                  </form>
                                   </td>
                                 </tr>
                                 <?php } ?>
