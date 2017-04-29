@@ -94,13 +94,16 @@
 		global $db;
 
 		$query = "
-		SELECT 1
-		FROM Security_Officer
-		WHERE
-			Security_Officer.Super_SSN IN
-			(SELECT SSN
-			FROM Security_Officer JOIN User_Accounts ON Security_Officer.SSN = User_Accounts.Officer_SSN
-			WHERE User_Accounts.Account_UUID = :user_UUID)
+		SELECT 1 
+		FROM Security_Officer JOIN User_Accounts ON Security_Officer.SSN = User_Accounts.Officer_SSN 
+		WHERE 
+			User_Accounts.Account_UUID = :user_UUID 
+			AND 
+			(	
+				(Security_Officer.Super_SSN IS NULL)
+				OR
+				(Security_Officer.SSN IN (SELECT DISTINCT Super_SSN FROM Security_Officer))
+			)
 		";
 
 		$query_params = array(
