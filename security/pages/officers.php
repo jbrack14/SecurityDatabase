@@ -2,13 +2,13 @@
     require("../config.php");
     require("../basicFunctions.php");
 	doLogInCheck();
-	
+
     //Get officers
     $query = "
         SELECT
           *
         FROM Security_Officer
-        ORDER BY Last_Name
+        ORDER BY Status, Last_Name
     ";
 
     try{
@@ -26,7 +26,7 @@
         FROM Security_Officer
         WHERE
          (Super_SSN IS NULL)
-		OR 
+		OR
 		 (SSN IN (SELECT DISTINCT Super_SSN FROM Security_Officer))
     ";
 
@@ -193,7 +193,7 @@
                             </thead>
                             <tbody>
                               <?php foreach($officerList as $row) { ?>
-                                <tr>
+                                <tr <?php if($row['Status'] == "INACTIVE") { echo 'class="warning"';} else if($row['Status'] == "RETIRED") { echo 'class="danger"';}?>>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
                                   <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
@@ -206,44 +206,44 @@
                                         <div>
                                         	<b>Supervisor:</b>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
-                                                <?php 
+                                                <?php
                                                 foreach($officerList as $row3) { ?>
                                                 <option value="<?php echo $row3['SSN']; ?>" <?php if($row3['SSN']==$row['Super_SSN']){echo "selected";} ?> ><?php echo $row3['Last_Name']; ?>, <?php echo $row3['First_Name']; ?></option>
                                                 <?php } ?>
                                                 <option value="" <?php if(empty($row['Super_SSN']) ){echo "selected";} ?> >None</option>
                                             </select>
                                         </div>
-                                        
+
                                         <b>Status:</b>
                                         <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                             <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
                                             <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
                                             <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
                                         </select>
-                                        
+
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                     </form>
                                   </td>
                                   <td>
-                                  
+
                                     <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
                                       <div class="form-group">
                                         <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
                                       </div>
                                     </form>
-                                    
+
                                   </td>
                                 </tr>
-                                
+
                                 <?php } ?>
                             </tbody>
                           </table>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h4><b>Supervisors</b></h4>
@@ -270,15 +270,15 @@
                                     <td>
                                         <ul><?php $query = "
                                             SELECT
-                                              First_Name, Last_Name 
+                                              First_Name, Last_Name
                                             FROM Security_Officer
                                             WHERE Super_SSN = :ssn
                                         ";
-                                        
+
                                         $query_params = array(
                                           ':ssn' => $row['SSN']
                                         );
-                                        
+
                                         try{
                                             $supervs = $db->prepare($query);
                                             $result = $supervs->execute($query_params);
@@ -295,9 +295,9 @@
                             </tbody>
                          </table>
                     </div>
-                    
+
                     <hr>
-                    
+
                     <div class="panel panel-info">
                         <div class="panel-success">
                           <div class="panel-heading">
@@ -346,7 +346,7 @@
                             <div class="col-lg-8">
                               <label for="super">Select an Officer:</label>
                                 <select class="form-control" id="super" name="super">
-                                  <?php 
+                                  <?php
                                   foreach($officerList as $row) { ?>
                                     <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
                                   <?php } ?>
@@ -360,7 +360,7 @@
                             </div>
                           </div>
                         </form>
-                    
+
                   </div>
                     <!-- /.panel -->
                 </div>
