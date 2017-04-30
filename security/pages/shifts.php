@@ -3,6 +3,7 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
+	$thisSSN = getUserSSN();
     //Get Supervisees
     $query = "
         SELECT
@@ -14,16 +15,14 @@
     ";
 
     $query_params = array(
-        ':ssn' => getUserSSN()
+        ':ssn' => $thisSSN
     );
 
     try{
         $supervisees = $db->prepare($query);
         $result = $supervisees->execute($query_params);
         $supervisees->setFetchMode(PDO::FETCH_ASSOC);
-        $supervisees2 = $db->prepare($query);
-        $result = $supervisees2->execute($query_params);
-        $supervisees2->setFetchMode(PDO::FETCH_ASSOC);
+		$superviseesList=$supervisees->fetchAll();
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_supervisees = $supervisees->rowCount();
@@ -38,11 +37,19 @@
         (SELECT
             SSN
         FROM Security_Officer
-        WHERE Super_SSN = :ssn AND Start_Time > NOW())
+        WHERE (Start_Time > NOW()) 
+			AND 
+			(
+				Super_SSN = :ssn
+				OR
+				(SSN = :ssn AND Super_SSN IS NULL) 
+			)
+		)
+		ORDER BY S.Start_Time, Created_Time
     ";
 
     $query_params = array(
-        ':ssn' => getUserSSN()
+        ':ssn' => $thisSSN
     );
 
     try{
@@ -62,11 +69,19 @@
         (SELECT
             SSN
         FROM Security_Officer
-        WHERE Super_SSN = :ssn AND Start_Time < NOW())
+        WHERE (Start_Time < NOW()) 
+			AND 
+			(
+				Super_SSN = :ssn
+				OR
+				(SSN = :ssn AND Super_SSN IS NULL) 
+			)
+		)
+		ORDER BY S.Start_Time, Created_Time
     ";
 
     $query_params = array(
-        ':ssn' => getUserSSN()
+        ':ssn' => $thisSSN
     );
 
     try{
@@ -76,6 +91,30 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_shifts = $num_shifts + $shifts_old->rowCount();
+	
+	
+    //Check if has supervisor
+    $query = "
+        SELECT
+          First_Name, Last_Name 
+        FROM Security_Officer
+        WHERE 
+			SSN = :ssn
+			AND
+			Super_SSN IS NULL
+    ";
+
+    $query_params = array(
+        ':ssn' => $thisSSN
+    );
+
+    try{
+        $checkHasSuper = $db->prepare($query);
+        $result = $checkHasSuper->execute($query_params);
+    }
+    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+	$hasSupervisor = !($checkHasSuper->rowCount() > 0);
+	$checkHasSuperRow = $checkHasSuper->fetch();
 ?>
 
 <!DOCTYPE html>
@@ -92,16 +131,17 @@
     <title>Shift Management System</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
-    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
+    <link type="text/css" href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link type="text/css" href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -110,6 +150,20 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script type="text/javascript" src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../vendor/moment/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+	
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+    
 </head>
 
 <body>
@@ -152,7 +206,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                              <?php while($row = $supervisees->fetch()) { ?>
+                              <?php foreach($superviseesList as $row) { ?>
                                 <tr>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
@@ -293,13 +347,23 @@
                           <div class="form-group">
                             <label class="col-lg-2 control-label">Start Time:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="start" id="start" type="datetime-local" value="<?php echo $profile['First_Name'] ?>" required>
+                                <input class="form-control" name="start" id="datetimepicker_start" type="text" required>
+								<script type="text/javascript">
+                                    $(function () {
+                                        $('#datetimepicker_start').datetimepicker({format:'MM/DD/YYYY HH:mm'});
+                                    });
+                                </script>
                             </div>
                           </div>
                           <div class="form-group">
                             <label class="col-lg-2 control-label">End Time:</label>
                             <div class="col-lg-8">
-                              <input class="form-control" name="end" id="end" type="datetime-local" value value="<?php echo $profile['Last_Name'] ?>" required>
+                                <input class="form-control" name="end" id="datetimepicker_end" type="text" required>
+								<script type="text/javascript">
+                                    $(function () {
+                                        $('#datetimepicker_end').datetimepicker({format:'MM/DD/YYYY HH:mm'});
+                                    });
+                                </script>
                             </div>
                           </div>
                           <div class="form-group">
@@ -307,9 +371,12 @@
                             <div class="col-lg-8">
                               <label for="ssn">Select an Officer:</label>
                                 <select class="form-control" id="ssn" name="ssn">
-                                  <?php while($row = $supervisees2->fetch()) { ?>
-                                    <option value="<?php echo $row['SSN'] ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
+                                  <?php foreach($superviseesList as $row) { ?>
+                                    <option value="<?php echo $row['SSN']; ?>"><?php echo $row['Last_Name'] ?>, <?php echo $row['First_Name'] ?></option>
                                   <?php } ?>
+									<?php if(!$hasSupervisor) { ?>
+                                    	<option value="<?php echo $thisSSN; ?>" selected><?php echo $checkHasSuperRow['Last_Name'] ?>, <?php echo $checkHasSuperRow['First_Name'] ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                           </div>
@@ -356,19 +423,14 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-
+    	<div class="container">
+            <div class="row">
+                    <div class="col-sm-6">
+                        
+                    </div>
+                    
+                </div>
+            </div>
 </body>
 
 </html>

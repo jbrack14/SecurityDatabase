@@ -1,7 +1,14 @@
 <?php
     require_once("../config.php");
-    if(!empty($_POST))
-    {
+	
+    if(!empty($_POST)
+	&& !empty($_POST['start']) 
+	&& !empty($_POST['end']) 
+	&& !empty($_POST['ssn'])  
+	&& !empty($_POST['spots']) )
+    {		
+		$startTime = DateTime::createFromFormat("m/d/Y H:i", $_POST['start']);
+		$EndTime = DateTime::createFromFormat("m/d/Y H:i", $_POST['end']);
         // Add shift to database
         $query = "
             INSERT INTO Shift_Assignment (
@@ -11,13 +18,13 @@
             ) VALUES (
                 :start,
                 :end,
-				        :ssn
+				:ssn
             )
         ";
 
         $query_params = array(
-            ':start' => $_POST['start'],
-            ':end' => $_POST['end'],
+            ':start' => $startTime->format('Y-m-d H:i:s'),
+            ':end' => $EndTime->format('Y-m-d H:i:s'),
             ':ssn' => $_POST['ssn']
         );
 
