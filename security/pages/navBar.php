@@ -93,6 +93,10 @@ else if(isSuperUser($_SESSION['User_UUID']))
                 <li>
                 	<a href="shifts.php"><i class="fa fa-calendar fa-fw"></i> Shifts</a>
                 </li>
+                
+                <li>
+                	<a href="supervisee.php"><i class="fa fa-users fa-fw"></i> Supervisee</a>
+                </li>
                 <?php } ?>
             </ul>
         </div>
