@@ -37,12 +37,12 @@
         (SELECT
             SSN
         FROM Security_Officer
-        WHERE (Start_Time > NOW()) 
-			AND 
+        WHERE (Start_Time > NOW())
+			AND
 			(
 				Super_SSN = :ssn
 				OR
-				(SSN = :ssn AND Super_SSN IS NULL) 
+				(SSN = :ssn AND Super_SSN IS NULL)
 			)
 		)
 		ORDER BY S.Start_Time, Created_Time
@@ -69,12 +69,12 @@
         (SELECT
             SSN
         FROM Security_Officer
-        WHERE (Start_Time < NOW()) 
-			AND 
+        WHERE (Start_Time < NOW())
+			AND
 			(
 				Super_SSN = :ssn
 				OR
-				(SSN = :ssn AND Super_SSN IS NULL) 
+				(SSN = :ssn AND Super_SSN IS NULL)
 			)
 		)
 		ORDER BY S.Start_Time, Created_Time
@@ -91,14 +91,14 @@
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_shifts = $num_shifts + $shifts_old->rowCount();
-	
-	
+
+
     //Check if has supervisor
     $query = "
         SELECT
-          First_Name, Last_Name 
+          First_Name, Last_Name
         FROM Security_Officer
-        WHERE 
+        WHERE
 			SSN = :ssn
 			AND
 			Super_SSN IS NULL
@@ -157,13 +157,13 @@
     <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../vendor/moment/moment-with-locales.min.js"></script>
     <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
-	
+
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-    
+
 </head>
 
 <body>
@@ -172,13 +172,13 @@
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-   
-<?php 
+
+<?php
 	$isLoadingNavBar = true;
-	require("navBar.php"); 
+	require("navBar.php");
 	$isLoadingNavBar = false;
 ?>
-            
+
         </nav>
 
         <div id="page-wrapper">
@@ -248,8 +248,8 @@
                         <table width="100%" class="table table-striped table-bordered table-hover">
                             <thead>
                                 <tr>
-                                    <th>Start Time</th>
-                                    <th>End Time</th>
+                                    <th>Time</th>
+                                    <th>Duration</th>
                                     <th>Last Name</th>
                                     <th>First Name</th>
                                     <th>Spots</th>
@@ -259,8 +259,8 @@
                             <tbody>
                               <?php while($row = $shifts->fetch()) { ?>
                                 <tr>
-                                  <td><?php echo $row['Start_Time']; ?></td>
-                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td>Start: <?php echo $row['Start_Time'];?><br>End: <?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo formatDurationS($row['Duration_s']); ?></td>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
                                   <td><ul><?php $query = "
@@ -297,8 +297,8 @@
                               <?php } ?>
                               <?php while($row = $shifts_old->fetch()) { ?>
                                 <tr class="warning">
-                                  <td><?php echo $row['Start_Time']; ?></td>
-                                  <td><?php echo $row['End_Time']; ?></td>
+                                  <td>Start: <?php echo $row['Start_Time'];?><br>End: <?php echo $row['End_Time']; ?></td>
+                                  <td><?php echo formatDurationS($row['Duration_s']); ?></td>
                                   <td><?php echo $row['Last_Name']; ?></td>
                                   <td><?php echo $row['First_Name']; ?></td>
                                   <td><ul><?php $query = "
@@ -426,9 +426,9 @@
     	<div class="container">
             <div class="row">
                     <div class="col-sm-6">
-                        
+
                     </div>
-                    
+
                 </div>
             </div>
 </body>

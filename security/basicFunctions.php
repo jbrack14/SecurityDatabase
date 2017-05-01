@@ -94,12 +94,12 @@
 		global $db;
 
 		$query = "
-		SELECT 1 
-		FROM Security_Officer JOIN User_Accounts ON Security_Officer.SSN = User_Accounts.Officer_SSN 
-		WHERE 
-			User_Accounts.Account_UUID = :user_UUID 
-			AND 
-			(	
+		SELECT 1
+		FROM Security_Officer JOIN User_Accounts ON Security_Officer.SSN = User_Accounts.Officer_SSN
+		WHERE
+			User_Accounts.Account_UUID = :user_UUID
+			AND
+			(
 				(Security_Officer.Super_SSN IS NULL)
 				OR
 				(Security_Officer.SSN IN (SELECT DISTINCT Super_SSN FROM Security_Officer))
@@ -162,4 +162,32 @@
 		return $result;
 
 	}
+
+  function formatDurationUS($microseconds ) {
+    return formatDurationS(($microseconds/1000000));
+  }
+
+  function formatDurationS($durationInSeconds) {
+    $duration = '';
+    $days = floor($durationInSeconds / 86400);
+    $durationInSeconds -= $days * 86400;
+    $hours = floor($durationInSeconds / 3600);
+    $durationInSeconds -= $hours * 3600;
+    $minutes = floor($durationInSeconds / 60);
+    $seconds = $durationInSeconds - $minutes * 60;
+
+    if($days > 0) {
+      $duration .= $days . 'd';
+    }
+    if($hours > 0) {
+      $duration .= ' ' . $hours . 'h';
+    }
+    if($minutes > 0) {
+      $duration .= ' ' . $minutes . 'm';
+    }
+    if($seconds > 0) {
+      $duration .= ' ' . $seconds . 's';
+    }
+    return $duration;
+  }
 ?>

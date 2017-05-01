@@ -260,7 +260,7 @@
                                     <?php }?>
                                     </ul>
                                     </td>
-                                    <td><?php echo ($row['Duration_s']/3600); ?></td>
+                                    <td><?php echo formatDurationS($row['Duration_s']); ?></td>
                                     <td><?php echo $row['Created_Time']; ?></td>
                                   </tr>
                                   <?php } ?>

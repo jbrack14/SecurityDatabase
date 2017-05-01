@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once("../basicFunctions.php");
 doLogInCheck();
 
@@ -26,7 +26,7 @@ if(!isset($videoListQuery) || !isset($backAddress))
             <?php echo '<img height="50" width="50" src="data:image/png;base64,'.base64_encode($videoListRow['Thumbnail']).'"/>'; ?>
             </td>
             <td><?php echo $videoListRow['Start_Time']; ?></td>
-            <td><?php echo $videoListRow['Duration_us']; ?></td>
+            <td><?php echo formatDurationUS($videoListRow['Duration_us']); ?></td>
             <td><?php  $query = "
                 SELECT
                     Coverage_Description
@@ -38,11 +38,11 @@ if(!isset($videoListQuery) || !isset($backAddress))
                     WHERE Camera_UID = :camera
                     )
                 ";
-                
+
                 $query_params = array(
                 ':camera' => $videoListRow['Camera_UID']
                 );
-                
+
                 try{
                 $spot = $db->prepare($query);
                 $result = $spot->execute($query_params);
@@ -59,7 +59,7 @@ if(!isset($videoListQuery) || !isset($backAddress))
                 </form>
             </td>
         </tr>
-        
+
         <?php } ?>
     </tbody>
 </table>
