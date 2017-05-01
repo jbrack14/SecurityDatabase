@@ -39,7 +39,7 @@
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
     $num_resolved_alarms = $resolved->rowCount();
 	
-	if(!empty($_SESSION['alarms_page_alarm_uuid']))
+	if(!empty($_POST['alarm_uuid']))
 	{
 		$query = "
 			SELECT
@@ -49,7 +49,7 @@
 			  Alarm_Event_UUID = :alarm_uuid
 		";
 		$query_params = array(
-		  ':alarm_uuid' => $_SESSION['alarms_page_alarm_uuid']
+		  ':alarm_uuid' => $_POST['alarm_uuid']
 		);
 		try{
 			$selectedAlarm = $db->prepare($query);
@@ -88,14 +88,14 @@
 		);
 		
 		try{
-			$relatedVideo = $db->prepare($query);
-			$result = $relatedVideo->execute($query_params);
-			$relatedVideo->setFetchMode(PDO::FETCH_ASSOC);
+			$videoListQuery = $db->prepare($query);
+			$result = $videoListQuery->execute($query_params);
+			$videoListQuery->setFetchMode(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 		
 	}
-	else if(!empty($_SESSION['alarms_page_video_uuid']))
+	else if(!empty($_POST['video_uuid']))
 	{
 		$query = "
 		SELECT
@@ -106,7 +106,7 @@
 		";
 		
 		$query_params = array(
-			':record' => $_SESSION['alarms_page_video_uuid']
+			':record' => $_POST['video_uuid']
 		);
 		
 		try{
@@ -162,14 +162,14 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
     
-	<?php if(!empty($_SESSION['alarms_page_alarm_uuid'])) {?>
+	<?php if(!empty($_POST['alarm_uuid'])) {?>
     <script> 
 	$(window).on('load',function()
 	{
 		$('#relatedVideoModal').modal('show');
 	});
 	</script>
-    <?php } else if(!empty($_SESSION['alarms_page_video_uuid'])) {?>
+    <?php } else if(!empty($_POST['video_uuid'])) {?>
     <script> 
 	$(window).on('load',function()
 	{
@@ -259,7 +259,7 @@
 									$relatedVideoCountRow = $relatedVideoCount->fetch();
 									echo $relatedVideoCountRow['Video_Num'] . " Video(s).";
 									?>
-                                    <form action="../php/showAlarmRelatedVideo.php" method="post" role="form" data-toggle="validator">
+                                    <form action="alarms.php" method="post" role="form" data-toggle="validator">
                                         <div class="form-group">
                                         	<button type="submit" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="alarm_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
                                         </div>
@@ -316,7 +316,7 @@
 
     </div>
     <!-- /#wrapper -->
-    <?php if(!empty($_SESSION['alarms_page_alarm_uuid'])) { ?>
+    <?php if(!empty($_POST['alarm_uuid'])) { ?>
     <!-- Modal content 1-->
     <div class="modal fade" id="relatedVideoModal" role="dialog">
         <div class="modal-dialog">
@@ -326,60 +326,11 @@
                     <h4 class="modal-title">Related Videos</h4>
                 </div>
                 <div class="modal-body">
-                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Start Time</th>
-                                <th>Duration</th>
-                                <th>Spot</th>
-                                <th>Resolution</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-							<?php while($relatedVideoRow = $relatedVideo->fetch()) { ?>
-                            <tr>
-                                <td>
-                                <?php echo '<img height="50" width="50" src="data:image/png;base64,'.base64_encode($relatedVideoRow['Thumbnail']).'"/>'; ?>
-                                </td>
-                                <td><?php echo $relatedVideoRow['Start_Time']; ?></td>
-                                <td><?php echo $relatedVideoRow['Duration_us']; ?></td>
-                                <td><?php  $query = "
-									SELECT
-										Coverage_Description
-									FROM Spot
-									WHERE
-										Spot_UUID = (
-										SELECT Spot_UUID
-										FROM Camera
-										WHERE Camera_UID = :camera
-										)
-									";
-									
-									$query_params = array(
-									':camera' => $relatedVideoRow['Camera_UID']
-									);
-									
-									try{
-									$spot = $db->prepare($query);
-									$result = $spot->execute($query_params);
-									}
-									catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-									echo implode(', ', $spot->fetch())?>
-                                </td>
-                                <td><?php echo $relatedVideoRow['Resolution_Width']; ?> x <?php echo $relatedVideoRow['Resolution_Height']; ?></td>
-                                <td>
-                                    <form action="../php/showAlarmRelatedVideo.php" method="post" role="form" data-toggle="validator">
-                                    <div class="form-group">
-                                    	<button type="submit" value="<?php echo $relatedVideoRow['Record_UUID']; ?>" name="video_uuid" id="play" class="play-button btn btn-info btn-md"><i class="fa fa-play fa-fw"></i> Play Video</button>
-                                    </div>
-                                    </form>
-                                </td>
-                            </tr>
-                            
-                            <?php } ?>
-                        </tbody>
-                    </table>
+					<?php 
+						$backAddress = "alarms.php";
+						require_once("../php/videoListTableTemplate.php"); 
+						unset($backAddress);
+					?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -388,7 +339,7 @@
         </div>
     </div>
     <!-- /Modal content 1-->
-	<?php } else if(!empty($_SESSION['alarms_page_video_uuid'])) { ?>
+	<?php } else if(!empty($_POST['video_uuid'])) { ?>
     <!-- Modal content 2-->
     <div class="modal fade" id="playingVideoModal" role="dialog">
         <div class="modal-dialog">
@@ -414,15 +365,14 @@
 </body>
 
 </html>
-
 <?php 
-if(!empty($_SESSION['alarms_page_alarm_uuid'])) 
+if(!empty($_POST['alarm_uuid'])) 
 {
-	unset($_SESSION['alarms_page_alarm_uuid']);
+	unset($_POST['alarm_uuid']);
 }
 
-if(!empty($_SESSION['alarms_page_video_uuid'])) 
+if(!empty($_POST['video_uuid'])) 
 {
-	unset($_SESSION['alarms_page_video_uuid']);
+	unset($_POST['video_uuid']);
 }
 ?>

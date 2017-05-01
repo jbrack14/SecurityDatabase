@@ -12,11 +12,33 @@
     ";
 
     try{
-        $videos = $db->prepare($query);
-        $result = $videos->execute();
-        $videos->setFetchMode(PDO::FETCH_ASSOC);
+        $videoListQuery = $db->prepare($query);
+        $result = $videoListQuery->execute();
+        $videoListQuery->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+	
+	if(!empty($_POST['video_uuid']))
+	{
+		$query = "
+		SELECT
+			Video_Data, Video_Format, Resolution_Height, Resolution_Width
+		FROM Surveillance_Video
+		WHERE
+			Record_UUID = :record
+		";
+		
+		$query_params = array(
+			':record' => $_POST['video_uuid']
+		);
+		
+		try{
+			$video = $db->prepare($query);
+			$result = $video->execute($query_params);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		$videoRow = $video->fetch();
+	}
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +73,27 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+    
+    <?php if(!empty($_POST['video_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#playingVideoModal').modal('show');
+	});
+	</script>
+    <?php } ?>
+
 </head>
 
 <body>
@@ -82,102 +125,11 @@
                         <div class="panel-heading">
                             <h4><b>Surveillance Video</b></h4>
                         </div>
-                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Start Time</th>
-                                    <th>Duration</th>
-                                    <th>Spot</th>
-                                    <th>Resolution</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              <?php while($row = $videos->fetch()) { ?>
-                                <tr>
-                                  <td>
-                                      <?php echo '<img height="50" width="50" src="data:image/png;base64,'.base64_encode($row['Thumbnail']).'"/>'; ?>
-                                  </td>
-                                  <td><?php echo $row['Start_Time']; ?></td>
-                                  <td><?php echo $row['Duration_us']; ?></td>
-                                  <td><?php  $query = "
-                                        SELECT
-                                          Coverage_Description
-                                        FROM Spot
-                                        WHERE
-                                        Spot_UUID = (
-                                          SELECT Spot_UUID
-                                          FROM Camera
-                                          WHERE Camera_UID = :camera
-                                          )                                  ";
-
-                                    $query_params = array(
-                                        ':camera' => $row['Camera_UID']
-                                    );
-
-                                    try{
-                                        $spot = $db->prepare($query);
-                                        $result = $spot->execute($query_params);
-                                    }
-                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                    echo implode(', ', $spot->fetch())?>
-                                  </td>
-                                  <td><?php echo $row['Resolution_Width']; ?> x <?php echo $row['Resolution_Height']; ?></td>
-                                  <td>
-                                    <form action="../php/showVideo.php" method="post" role="form" data-toggle="validator">
-                                        <div class="form-group">
-                                        <button type="submit" value="<?php echo $row['Record_UUID']; ?>" name="video_uuid" id="play" class="play-button btn btn-info btn-md"><i class="fa fa-play fa-fw"></i> Play Video</button>
-                                        </div>
-                                    </form>
-                                  </td>
-                                </tr>
-                                
-                                <?php } ?>
-                            </tbody>
-                          </table>
-                          	<?php if(!empty($_SESSION['video_page_video_uuid'])) {?>
-							<!-- Modal content-->
-                            <div class="modal fade" id="myModal" role="dialog">
-                            	<div class="modal-dialog">
-                                	<div class="modal-content">
-                                    	<div class="modal-header">
-                                        	<button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        	<h4 class="modal-title">Video</h4>
-                                    	</div>
-                                    	<div class="modal-body">
-                                        	<?php
-											$query = "
-												SELECT
-												  Video_Data, Video_Format, Resolution_Height, Resolution_Width
-												FROM Surveillance_Video
-												WHERE
-												Record_UUID = :record
-											";
-											
-                                            $query_params = array(
-                                                ':record' => $_SESSION['video_page_video_uuid']
-                                            );
-											
-                                            try{
-                                                $spot = $db->prepare($query);
-                                                $result = $spot->execute($query_params);
-                                            }
-                                            catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-                                            $video = $spot->fetch();
-                                        	?>
-                                            <video width="100%" height="" controls>
-                                            <?php echo '<source src="data:image/png;base64,'.base64_encode($video['Video_Data']).'" type="video/'.$video['Video_Format'].'"  />'; ?>
-                                             Your browser does not support HTML5 video.
-                                            </video>
-										</div>
-                                        <div class="modal-footer">
-                                        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /Modal content-->
-                            <?php } ?>
+						<?php 
+							$backAddress = "videos.php";
+							require_once("../php/videoListTableTemplate.php"); 
+							unset($backAddress);
+						?>
                     </div>
                     <!-- /.panel-info -->
                 </div>
@@ -189,34 +141,37 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
     
-    <?php if(!empty($_SESSION['video_page_video_uuid'])) {?>
-    <script> 
-	$(window).on('load',function()
-	{
-		$('#myModal').modal('show');
-	});
-	</script>
-    <?php } ?>
+    <?php if(!empty($_POST['video_uuid'])) { ?>
+    <!-- Modal content 2-->
+    <div class="modal fade" id="playingVideoModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Playing Video</h4>
+                </div>
+                <div class="modal-body">
+                    <video width="100%" height="" controls>
+                    	<?php echo '<source src="data:image/png;base64,'.base64_encode($videoRow['Video_Data']).'" type="video/'.$videoRow['Video_Format'].'"  />'; ?>
+                    	Your browser does not support HTML5 video.
+                    </video>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal content 2-->
+	<?php } ?>
 
 </body>
 
 </html>
 <?php 
-if(!empty($_SESSION['video_page_video_uuid'])) 
+if(!empty($_POST['video_uuid'])) 
 {
-	unset($_SESSION['video_page_video_uuid']);
+	unset($_POST['video_uuid']);
 }
 ?>

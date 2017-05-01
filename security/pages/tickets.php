@@ -189,6 +189,34 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+    
+    <?php if(!empty($_POST['ticket_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#relatedVideoModal').modal('show');
+	});
+	</script>
+    <?php } else if(!empty($_POST['video_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#playingVideoModal').modal('show');
+	});
+	</script>
+    <?php } ?>
 
 </head>
 
@@ -368,35 +396,6 @@
     </div>
     <!-- /Modal content 2-->
 	<?php } ?>
-    
-
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
-    
-    <?php if(!empty($_POST['ticket_uuid'])) {?>
-    <script> 
-	$(window).on('load',function()
-	{
-		$('#relatedVideoModal').modal('show');
-	});
-	</script>
-    <?php } else if(!empty($_POST['video_uuid'])) {?>
-    <script> 
-	$(window).on('load',function()
-	{
-		$('#playingVideoModal').modal('show');
-	});
-	</script>
-    <?php } ?>
     
 </body>
 
