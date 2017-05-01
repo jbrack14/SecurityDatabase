@@ -7,9 +7,16 @@
         { die("Please enter a name."); }
         if(empty($_POST['ticket_email']))
         { die("Please enter an email."); }
-		    if(empty($_POST['ticket_message']))
-		    { die("Please enter your ticket message."); }
-
+		if(empty($_POST['start']))
+		{ die("Please enter the start time."); }
+		if(empty($_POST['end']))
+		{ die("Please enter the end time."); }
+		if(empty($_POST['ticket_message']))
+		{ die("Please enter your ticket message."); }
+		
+		$startTime = DateTime::createFromFormat("m/d/Y H:i", $_POST['start']);
+		$EndTime = DateTime::createFromFormat("m/d/Y H:i", $_POST['end']);
+		
         // Add ticket to database
         $query = "
             INSERT INTO Ticket (
@@ -23,7 +30,7 @@
                 :name,
                 :email,
                 :phone,
-				        :description,
+				:description,
                 :start,
                 :end
             )
@@ -34,8 +41,8 @@
             ':email' => $_POST['ticket_email'],
             ':phone' => $_POST['ticket_phone'],
             ':description' => $_POST['ticket_message'],
-            'start' => $_POST['start'],
-            'end' => $_POST['end']
+            'start' => $startTime->format('Y-m-d H:i:s'),
+            'end' => $EndTime->format('Y-m-d H:i:s')
         );
 
         try {

@@ -24,16 +24,17 @@
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/js/bootstrapValidator.min.js"> </script>
 
     <!-- Bootstrap Core CSS -->
-    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
-    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link type="text/css" href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="../dist/css/login.css" rel="stylesheet">
+    <link type="text/css" href="../dist/css/login.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link type="text/css" href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,6 +43,22 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <!-- jQuery -->
+    <script type="text/javascript" src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../vendor/moment/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="../vendor/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+
+    <!-- Bootstrap Validator JavaScript -->
+    <script type="text/javascript" src="../node_modules/bootstrap-validator/dist/validator.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script type="text/javascript" src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script type="text/javascript" src="../dist/js/sb-admin-2.js"></script>
 </head>
 
 <body>
@@ -113,17 +130,29 @@
                         </div>
                       </div>
 
+                      <!-- Start Time -->
                       <div class="form-group">
-                        <label class="col-md-3 control-label" for="start">Start Time:</label>
-                        <div class="col-md-9">
-                          <input class="form-control col-md-9" name="start" id="start" type="datetime-local" value="" required>
+                        <label class="col-lg-3 control-label">Start Time:</label>
+                        <div class="col-lg-9">
+                            <input class="form-control" name="start" id="datetimepicker_start" type="text" required>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker_start').datetimepicker({format:'MM/DD/YYYY HH:mm'});
+                                });
+                            </script>
                         </div>
                       </div>
                       
+                      <!-- End Time -->
                       <div class="form-group">
-                        <label class="col-md-3 control-label" for="end">End Time:</label>
-                        <div class="col-md-9">
-                          <input class="form-control col-md-9" name="end" id="end" type="datetime-local" value="" required>
+                        <label class="col-lg-3 control-label">End Time:</label>
+                        <div class="col-lg-9">
+                            <input class="form-control" name="end" id="datetimepicker_end" type="text" required>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker_end').datetimepicker({format:'MM/DD/YYYY HH:mm'});
+                                });
+                            </script>
                         </div>
                       </div>
 
@@ -157,20 +186,6 @@
   </div>
 </div>
 
-    <!-- jQuery -->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-
-    <!-- Bootstrap Validator JavaScript -->
-    <script src="../node_modules/bootstrap-validator/dist/validator.min.js"></script>
-
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
-
-    <!-- Custom Theme JavaScript -->
-    <script src="../dist/js/sb-admin-2.js"></script>
 
 </body>
 
