@@ -88,75 +88,61 @@
                         </div>
                         <br>
                         <div>
-                            <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
-                            <form class="form-horizontal" action="../php/updateSuperUser.php" method="post" role="form">
-                            <?php } else {?>
                             <form class="form-horizontal" action="../php/updateUser.php" method="post" role="form">
-                            <?php } ?>
-                              <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">First name:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="first" id="first"type="text" value="<?php echo $profile['First_Name'] ?>">
-                                </div>
-                              </div>
-                              <?php } else {?>
+
                                 <div class="form-group">
                                   <label class="col-lg-2 control-label">First name:</label>
                                   <div class="col-lg-8">
                                     <input class="form-control" name="first" id="first"type="text" value="<?php echo $profile['First_Name'] ?>" disabled>
                                   </div>
                                 </div>
-                              <?php } ?>
-                              <?php if(isSuperUser($_SESSION['User_UUID'])) { ?>
-                              <div class="form-group">
-                                <label class="col-lg-2 control-label">Last name:</label>
-                                <div class="col-lg-8">
-                                  <input class="form-control" name="last" id="last" type="text" value="<?php echo $profile['Last_Name'] ?>">
-                                </div>
-                              </div>
-                              <?php } else {?>
+
                                 <div class="form-group">
                                   <label class="col-lg-2 control-label">Last name:</label>
                                   <div class="col-lg-8">
                                     <input class="form-control" name="last" id="last" type="text" value="<?php echo $profile['Last_Name'] ?>" disabled>
                                   </div>
                                 </div>
-                              <?php } ?>
+                                
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Phone number:</label>
                                 <div class="col-lg-8">
                                   <input class="form-control" name="phone" id="phone" type="text" value="<?php echo $profile['Phone_Number'] ?>">
                                 </div>
                               </div>
+                              
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Email:</label>
                                 <div class="col-lg-8">
                                   <input class="form-control" name="email" id="email" type="text" value="<?php echo $profile['Email'] ?>">
                                 </div>
                               </div>
+                              
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Address:</label>
                                   <div class="col-lg-8">
                                     <input class="form-control" name="address" id="address" type="text" value="<?php echo $profile['Address'] ?>">
                                   </div>
                               </div>
+                              
                               <div class="form-group">
                                 <label class="col-md-2 control-label">Username:</label>
                                 <div class="col-md-8">
-                                  <input class="form-control" type="text" value="<?php echo getUsername() ?>" disabled>
+                                  <input class="form-control" name="username" id="username" type="text" value="<?php echo getUsername() ?>">
                                 </div>
                               </div>
+                              
                               <div class="form-group">
                                 <label class="col-md-2 control-label"></label>
                                 <div class="col-md-8">
                                   <input type="submit" class="btn btn-primary" value="Save Changes">
                                 </div>
                               </div>
+                              
                             </form>
                           </div>
                     </div>
-                    <hr>
+                    
                     </div>
                     <!-- /.panel -->
                 </div>

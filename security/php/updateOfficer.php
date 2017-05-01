@@ -1,7 +1,9 @@
 <?php
     require("../config.php");
     require("../basicFunctions.php");
-    if(!empty($_POST) && (!empty($_POST['status']) && !empty($_POST['off_ssn'])))
+    if(!empty($_POST) 
+	&& !empty($_POST['status']) 
+	&& !empty($_POST['off_ssn']) )
     {
 		// Update Security_Officer Table
         $query = "
