@@ -257,11 +257,12 @@
 									}
 									catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
 									$relatedVideoCountRow = $relatedVideoCount->fetch();
-									echo $relatedVideoCountRow['Video_Num'] . " Video(s).";
+                  $relatedVideoCountNum = $relatedVideoCountRow['Video_Num'];
+									echo $relatedVideoCountNum . " Video(s).";
 									?>
                                     <form action="alarms.php" method="post" role="form" data-toggle="validator">
                                         <div class="form-group">
-                                        	<button type="submit" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="alarm_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
+                                        	<button type="submit" value="<?php echo $row['Alarm_Event_UUID']; ?>" name="alarm_uuid" id="play" class="play-button btn btn-info btn-md" <?php if($relatedVideoCountNum == 0){ echo 'disabled="true"'; } ?>>Show Videos</button>
                                         </div>
                                     </form>
 								</td>
