@@ -33,7 +33,49 @@
         $resolved->setFetchMode(PDO::FETCH_ASSOC);
     }
     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
-
+	
+	function GetRelatedVideosCount($ticketUUID, $startTime, $endTime)
+	{
+		global $db;
+		
+		$query = "
+		SELECT
+			COUNT(*) AS Video_Num
+		FROM Surveillance_Video AS S inner join (Camera natural join Spot) on Camera.Camera_UID = S.Camera_UID
+		WHERE 
+			CASE 
+				WHEN EXISTS(SELECT 1 FROM Ticket_Spots WHERE Ticket_Spots.Ticket_UUID = :TicketUUID) THEN
+					Spot.Spot_UUID IN (SELECT Spot_UUID FROM Ticket_Spots WHERE Ticket_Spots.Ticket_UUID = :TicketUUID) 
+				ELSE
+					TRUE
+			END
+				AND 
+				(
+					(timestampdiff(SECOND, :TicketStartTime, S.Start_Time) >= 0
+						AND timestampdiff(SECOND, S.Start_Time, :TicketEndTime) >= 0)
+					OR (timestampdiff(SECOND, :TicketStartTime, S.End_Time) >= 0
+						AND timestampdiff(SECOND, S.End_Time, :TicketEndTime) >= 0)
+					OR (timestampdiff(SECOND, S.Start_Time, :TicketStartTime) >= 0
+						AND timestampdiff(SECOND, :TicketEndTime, S.End_Time) >= 0)
+				)
+		;
+		";
+		
+		$query_params = array(
+		  ':TicketUUID' => $ticketUUID,
+		  ':TicketStartTime' => $startTime,
+		  ':TicketEndTime' => $endTime
+		);
+		
+		try{
+			$relatedVideoCount = $db->prepare($query);
+			$result = $relatedVideoCount->execute($query_params);
+			$relatedVideoCount->setFetchMode(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		$relatedVideoCountRow = $relatedVideoCount->fetch();
+		return $relatedVideoCountRow['Video_Num'];
+	}
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +148,7 @@
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
-                                    <th class="col-md-4">Description</th>
+                                    <th>Description</th>
                                     <th>Time Started</th>
                                     <th>Time Finished</th>
                                     <th>Related Videos</th>
@@ -122,10 +164,16 @@
                                   <td><?php echo $row['Name']; ?></td>
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Phone_Num']; ?></td>
-                                  <td class="col-md-4"><?php echo $row['Description'];?></td>
+                                  <td><?php echo $row['Description'];?></td>
                                   <td><?php echo $row['Start_Time'];?></td>
                                   <td><?php echo $row['End_Time'];?></td>
-                                  <td>    </td>
+                                  <td><?php echo GetRelatedVideosCount($row['Ticket_UUID'], $row['Start_Time'], $row['End_Time']) . " Video(s)."; ?>
+                                <form action="../php/tickets.php" method="post" role="form" data-toggle="validator">
+                                    <div class="form-group">
+                                        <button type="submit" value="<?php echo $row['Ticket_UUID']; ?>" name="ticket_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
+                                    </div>
+                                </form>
+                                  </td>
                                   <td class="col-md-4">
                                     <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
                                   </td>
