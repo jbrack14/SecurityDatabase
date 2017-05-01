@@ -24,7 +24,7 @@
             *
         FROM Alarm_Event
         WHERE
-        Resolved_Time = null
+        Resolved_Time IS NULL
     ";
 
     try{
@@ -99,13 +99,13 @@
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
- 
-<?php 
+
+<?php
 	$isLoadingNavBar = true;
-	require("navBar.php"); 
+	require("navBar.php");
 	$isLoadingNavBar = false;
 ?>
-            
+
         </nav>
 
         <div id="page-wrapper">
