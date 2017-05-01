@@ -76,6 +76,86 @@
 		$relatedVideoCountRow = $relatedVideoCount->fetch();
 		return $relatedVideoCountRow['Video_Num'];
 	}
+	
+	if(!empty($_POST['ticket_uuid']))
+	{
+		$query = "
+			SELECT
+				*
+			FROM Ticket
+			WHERE Ticket_UUID = :ticketUUID
+		";
+		
+		$query_params = array(
+		  ':ticketUUID' => $_POST['ticket_uuid']
+		);
+		try{
+			$ticketInfoQuery = $db->prepare($query);
+			$result = $ticketInfoQuery->execute($query_params);
+			$ticketInfoQuery->setFetchMode(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		
+		$ticketInfoRow = $ticketInfoQuery->fetch();
+		
+		$query = "
+		SELECT
+			S.Thumbnail, S.Start_Time, S.End_Time, S.Duration_us, S.Resolution_Height, S.Resolution_Width, S.Video_Format, S.Record_UUID, S.Camera_UID
+		FROM Surveillance_Video AS S inner join (Camera natural join Spot) on Camera.Camera_UID = S.Camera_UID
+		WHERE 
+			CASE 
+				WHEN EXISTS(SELECT 1 FROM Ticket_Spots WHERE Ticket_Spots.Ticket_UUID = :TicketUUID) THEN
+					Spot.Spot_UUID IN (SELECT Spot_UUID FROM Ticket_Spots WHERE Ticket_Spots.Ticket_UUID = :TicketUUID) 
+				ELSE
+					TRUE
+			END
+				AND 
+				(
+					(timestampdiff(SECOND, :TicketStartTime, S.Start_Time) >= 0
+						AND timestampdiff(SECOND, S.Start_Time, :TicketEndTime) >= 0)
+					OR (timestampdiff(SECOND, :TicketStartTime, S.End_Time) >= 0
+						AND timestampdiff(SECOND, S.End_Time, :TicketEndTime) >= 0)
+					OR (timestampdiff(SECOND, S.Start_Time, :TicketStartTime) >= 0
+						AND timestampdiff(SECOND, :TicketEndTime, S.End_Time) >= 0)
+				)
+		;
+		";
+		
+		$query_params = array(
+		  ':TicketUUID' => $ticketInfoRow['Ticket_UUID'],
+		  ':TicketStartTime' => $ticketInfoRow['Start_Time'],
+		  ':TicketEndTime' => $ticketInfoRow['End_Time']
+		);
+		
+		try{
+			$videoListQuery = $db->prepare($query);
+			$result = $videoListQuery->execute($query_params);
+			$videoListQuery->setFetchMode(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		
+	}
+	else if(!empty($_POST['video_uuid']))
+	{
+		$query = "
+		SELECT
+			Video_Data, Video_Format, Resolution_Height, Resolution_Width
+		FROM Surveillance_Video
+		WHERE
+			Record_UUID = :record
+		";
+		
+		$query_params = array(
+			':record' => $_POST['video_uuid']
+		);
+		
+		try{
+			$video = $db->prepare($query);
+			$result = $video->execute($query_params);
+		}
+		catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+		$videoRow = $video->fetch();
+	}
 ?>
 
 <!DOCTYPE html>
@@ -159,7 +239,7 @@
                             <tbody>
                               <?php while($row = $unresolved->fetch()) { ?>
                                 <tr>
-                                  <form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
+                                  
                                   <td><?php echo $row['Time_Created']; ?></td>
                                   <td><?php echo $row['Name']; ?></td>
                                   <td><?php echo $row['Email']; ?></td>
@@ -168,22 +248,20 @@
                                   <td><?php echo $row['Start_Time'];?></td>
                                   <td><?php echo $row['End_Time'];?></td>
                                   <td><?php echo GetRelatedVideosCount($row['Ticket_UUID'], $row['Start_Time'], $row['End_Time']) . " Video(s)."; ?>
-                                <form action="../php/tickets.php" method="post" role="form" data-toggle="validator">
+                                <form action="tickets.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                         <button type="submit" value="<?php echo $row['Ticket_UUID']; ?>" name="ticket_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
                                     </div>
                                 </form>
                                   </td>
                                   <td class="col-md-4">
-                                    <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
+                                      <form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
+                                        <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
+                                        <input type="hidden" value="<?php echo $row['Ticket_UUID']; ?>" name="resolve" id="resolve">
+                                        <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
+                                      </form>
                                   </td>
-                                  <td>
-                                    <div class="form-group">
-                                      <input type="hidden" value="<?php echo $row['Ticket_UUID']; ?>" name="resolve" id="resolve">
-                                      <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
-                                    </div>
-                                  </td>
-                                </form>
+                                
                                 </tr>
                                 <?php } ?>
                             <tbody>
@@ -243,6 +321,54 @@
 
     </div>
     <!-- /#wrapper -->
+    
+    <?php if(!empty($_POST['ticket_uuid'])){ ?>
+    <!-- Modal content 1-->
+    <div class="modal fade" id="relatedVideoModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Related Videos</h4>
+                </div>
+                <div class="modal-body">
+					<?php 
+						$backAddress = "../pages/tickets.php";
+						require_once("../php/videoListTableTemplate.php"); 
+						unset($backAddress);
+					?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal content 1-->
+	<?php }	else if(!empty($_POST['video_uuid'])) { ?>
+    <!-- Modal content 2-->
+    <div class="modal fade" id="playingVideoModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Playing Video</h4>
+                </div>
+                <div class="modal-body">
+                    <video width="100%" height="" controls>
+                    	<?php echo '<source src="data:image/png;base64,'.base64_encode($videoRow['Video_Data']).'" type="video/'.$videoRow['Video_Format'].'"  />'; ?>
+                    	Your browser does not support HTML5 video.
+                    </video>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal content 2-->
+	<?php } ?>
+    
 
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
@@ -255,7 +381,34 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-
+    
+    <?php if(!empty($_POST['ticket_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#relatedVideoModal').modal('show');
+	});
+	</script>
+    <?php } else if(!empty($_POST['video_uuid'])) {?>
+    <script> 
+	$(window).on('load',function()
+	{
+		$('#playingVideoModal').modal('show');
+	});
+	</script>
+    <?php } ?>
+    
 </body>
 
 </html>
+<?php 
+if(!empty($_POST['ticket_uuid'])) 
+{
+	unset($_POST['ticket_uuid']);
+}
+
+if(!empty($_POST['video_uuid'])) 
+{
+	unset($_POST['video_uuid']);
+}
+?>
