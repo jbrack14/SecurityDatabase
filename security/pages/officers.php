@@ -111,20 +111,34 @@
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example" style="font-size: 12px;">
                             <thead>
                                 <tr>
-                                    <th>Last Name</th>
-                                    <th>First Name</th>
+                                    <th>Name</th>
                                     <th>Phone Number</th>
                                     <th>Email</th>
                                     <th>Address</th>
-                                    <th></th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                               <?php foreach($officerList as $row) { ?>
                                 <tr <?php if($row['Status'] == "INACTIVE") { echo 'class="warning"';} else if($row['Status'] == "RETIRED") { echo 'class="danger"';}?>>
-                                  <td><?php echo $row['Last_Name']; ?></td>
-                                  <td><?php echo $row['First_Name']; ?></td>
+                                  <td>
+								  	<form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
+                                    	<input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">Last Name: </label>
+                                            <div class="col-md-9">
+                                            	<input class="form-control" name="last" id="last" type="text" value="<?php echo $row['Last_Name']; ?>" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-3 control-label">First Name: </label>
+                                            <div class="col-md-9">
+                                            	<input class="form-control" name="first" id="first" type="text" value="<?php echo $row['First_Name']; ?>" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i>Update</button>
+                                    </form>
+                                  </td>
                                   <td>(<?php echo substr($row['Phone_Number'], 0, 3); ?>) <?php echo substr($row['Phone_Number'], 3, 3); ?> - <?php echo substr($row['Phone_Number'], 6, 4); ?></td>
                                   <td><?php echo $row['Email']; ?></td>
                                   <td><?php echo $row['Address'];  ?></td>
@@ -150,20 +164,11 @@
                                             <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
                                         </select>
 
-                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
+                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i>Update</button>
                                     </div>
                                     </form>
                                   </td>
-                                  <td>
-
-                                    <form action="../php/delete_officer.php" method="post" role="form" data-toggle="validator">
-                                      <div class="form-group">
-                                        <input type="hidden" value="<?php echo $row['SSN']; ?>" name="delete" id="delete">
-                                        <button type="submit" tabindex="4" class="form-control btn btn-xs btn-danger"><i class="fa fa-trash fa-fw"></i></button>
-                                      </div>
-                                    </form>
-
-                                  </td>
+                                  
                                 </tr>
 
                                 <?php } ?>
