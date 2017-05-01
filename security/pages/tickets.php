@@ -268,21 +268,21 @@
                               <?php while($row = $unresolved->fetch()) { ?>
                                 <tr>
                                   
-                                  <td><?php echo $row['Time_Created']; ?></td>
-                                  <td><?php echo $row['Name']; ?></td>
-                                  <td><?php echo $row['Email']; ?></td>
-                                  <td><?php echo $row['Phone_Num']; ?></td>
-                                  <td><?php echo $row['Description'];?></td>
-                                  <td><?php echo $row['Start_Time'];?></td>
-                                  <td><?php echo $row['End_Time'];?></td>
-                                  <td><?php echo GetRelatedVideosCount($row['Ticket_UUID'], $row['Start_Time'], $row['End_Time']) . " Video(s)."; ?>
+                                  <td class="col-md-1"><?php echo $row['Time_Created']; ?></td>
+                                  <td class="col-md-1"><?php echo $row['Name']; ?></td>
+                                  <td class="col-md-1"><?php echo $row['Email']; ?></td>
+                                  <td class="col-md-1"><?php echo $row['Phone_Num']; ?></td>
+                                  <td class="col-md-2"><?php echo $row['Description'];?></td>
+                                  <td class="col-md-1"><?php echo $row['Start_Time'];?></td>
+                                  <td class="col-md-1"><?php echo $row['End_Time'];?></td>
+                                  <td class="col-md-1"><?php echo GetRelatedVideosCount($row['Ticket_UUID'], $row['Start_Time'], $row['End_Time']) . " Video(s)."; ?>
                                 <form action="tickets.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                         <button type="submit" value="<?php echo $row['Ticket_UUID']; ?>" name="ticket_uuid" id="play" class="play-button btn btn-info btn-md">Show Videos</button>
                                     </div>
                                 </form>
                                   </td>
-                                  <td class="col-md-4">
+                                  <td class="col-md-2">
                                       <form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
                                         <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
                                         <input type="hidden" value="<?php echo $row['Ticket_UUID']; ?>" name="resolve" id="resolve">

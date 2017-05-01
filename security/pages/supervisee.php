@@ -116,14 +116,14 @@
                                     <form action="../php/updateSupervisee.php" method="post" role="form" data-toggle="validator">
                                     	<input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Last Name:</label>
-                                            <div class="col-lg-8">
+                                            <label class="col-lg-2 control-label">Last Name: </label>
+                                            <div class="col-lg-10">
                                             	<input class="form-control" name="last" id="last" type="text" placeholder="Last Name" required>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">First Name:</label>
-                                            <div class="col-lg-8">
+                                            <label class="col-lg-2 control-label">First Name: </label>
+                                            <div class="col-lg-10">
                                             	<input class="form-control" name="first" id="first" type="text" placeholder="First Name" required>
                                             </div>
                                         </div>
