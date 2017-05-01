@@ -36,6 +36,12 @@
 
     <title>Security Officer Terminal</title>
 
+    <!-- Bootstrap Validator-->
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css"/>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/js/bootstrapValidator.min.js"> </script>
+
     <!-- Bootstrap Core CSS -->
     <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -64,12 +70,12 @@
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 
-<?php 
+<?php
 	$isLoadingNavBar = true;
-	require("navBar.php"); 
+	require("navBar.php");
 	$isLoadingNavBar = false;
 ?>
-            
+
         </nav>
 
         <div id="page-wrapper">
@@ -103,46 +109,89 @@
                                     <input class="form-control" name="last" id="last" type="text" value="<?php echo $profile['Last_Name'] ?>" disabled>
                                   </div>
                                 </div>
-                                
+
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Phone number:</label>
                                 <div class="col-lg-8">
                                   <input class="form-control" name="phone" id="phone" type="text" value="<?php echo $profile['Phone_Number'] ?>">
                                 </div>
                               </div>
-                              
+
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Email:</label>
                                 <div class="col-lg-8">
                                   <input class="form-control" name="email" id="email" type="text" value="<?php echo $profile['Email'] ?>">
                                 </div>
                               </div>
-                              
+
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Address:</label>
                                   <div class="col-lg-8">
                                     <input class="form-control" name="address" id="address" type="text" value="<?php echo $profile['Address'] ?>">
                                   </div>
                               </div>
-                              
+
                               <div class="form-group">
                                 <label class="col-md-2 control-label">Username:</label>
                                 <div class="col-md-8">
                                   <input class="form-control" name="username" id="username" type="text" value="<?php echo getUsername() ?>">
                                 </div>
                               </div>
-                              
+
                               <div class="form-group">
                                 <label class="col-md-2 control-label"></label>
                                 <div class="col-md-8">
                                   <input type="submit" class="btn btn-primary" value="Save Changes">
                                 </div>
                               </div>
-                              
+
                             </form>
                           </div>
                     </div>
-                    
+
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Change Your Password
+                        </div>
+                        <br>
+                        <div>
+                            <form class="form-horizontal" action="../php/change_password.php" method="post" role="form" data-toggle="validator">
+
+                                <div class="form-group">
+                                  <label class="col-lg-2 control-label">Current Password:</label>
+                                  <div class="col-lg-8">
+                                    <input class="form-control" name="current" id="current" type="password">
+                                  </div>
+                                </div>
+
+                                <div class="form-group">
+                                  <label class="col-lg-2 control-label">New Password:</label>
+                                  <div class="col-lg-8">
+                                    <input type="password" data-minlength="6" name="inputPassword" id="inputPassword" tabindex="2" class="form-control" placeholder="Password" required>
+                                    <div class="help-block">Minimum of 6 characters</div>
+                                  </div>
+                                </div>
+
+                                <div class="form-group">
+                                  <label class="col-lg-2 control-label">Confirm New Password:</label>
+                                  <div class="col-lg-8">
+                                    <input type="password" name="confirm-password" id="confirm-password" data-match="#inputPassword" data-match-error="Passwords don't match." tabindex="2" class="form-control" placeholder="Confirm Password" required>
+                                    <div class="help-block with-errors"></div>
+                                  </div>
+                                </div>
+
+                              <div class="form-group">
+                                <label class="col-md-2 control-label"></label>
+                                <div class="col-md-8">
+                                  <input type="submit" class="btn btn-primary" value="Change Password">
+                                </div>
+                              </div>
+
+                            </form>
+                          </div>
+                    </div>
+
                     </div>
                     <!-- /.panel -->
                 </div>
@@ -157,6 +206,10 @@
 
     <!-- jQuery -->
     <script src="../vendor/jquery/jquery.min.js"></script>
+
+
+    <!-- Bootstrap Validator JavaScript -->
+    <script src="../node_modules/bootstrap-validator/dist/validator.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
