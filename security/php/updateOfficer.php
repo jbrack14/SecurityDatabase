@@ -16,7 +16,7 @@
         ";
 		
 		$superSSN = NULL;
-		if(empty($_POST['super']))
+		if(!empty($_POST['super']))
 		{
 			$superSSN = $_POST['super'];
 		}
