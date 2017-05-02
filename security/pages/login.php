@@ -1,3 +1,6 @@
+<?php
+    require_once("../config.php");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -37,7 +40,6 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
 </head>
 
 <body>
@@ -57,9 +59,16 @@
           <hr>
         </div>
         <div class="panel-body">
+          <?php if(isset($_SESSION['login_fail']) && $_SESSION['login_fail']) {
+            echo
+            '<div class="alert alert-danger alert-dismissable">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <strong>Error!</strong> The username / password combination you enetered was incorrect. Please try again.
+            </div>';
+          }?>
           <div class="row">
             <div class="col-lg-12">
-              <form id="login-form" action="../php/login.php" data-toggle="validator" method="post" role="form" style="display: block;">
+              <form id="login-form" action="../php/login_check.php" data-toggle="validator" method="post" role="form" style="display: block;">
                 <div class="form-group">
                   <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
                 </div>
@@ -108,7 +117,7 @@
                 	<i class="fa fa-ticket"></i> Submit Security Ticket
                 </a>
             </div>
-            
+
             <div class="col-md-12" style="margin-top:10px">
                 <a href="../javaapi/" type="button" class="col-md-6 btn btn-success btn-lg">
                 	<i class="fa fa-code"></i> Java API
@@ -141,3 +150,9 @@
 </body>
 
 </html>
+<?php
+if(isset($_SESSION['login_fail']))
+{
+	unset($_SESSION['login_fail']);
+}
+?>

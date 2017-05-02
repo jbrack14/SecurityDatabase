@@ -42,8 +42,9 @@
 			die("Redirecting to: ../pages/home.php");
         }
         else{
-            print("Login Failed.");
-            $submitted_username = htmlentities($_POST['username'], ENT_QUOTES, 'UTF-8');
+            $_SESSION['login_fail'] = true;
+            header("Location: ../pages/login.php");
+      			die("Redirecting to: ../pages/login.php");
         }
     }
 ?>

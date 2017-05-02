@@ -37,7 +37,7 @@
         }
 
         if(!$login_ok){
-          $_SESSION['profile_page_set_password'] = 'false';
+          $_SESSION['profile_page_set_password'] = false;
           header("Location: ../pages/user.php");
           die("Error incorrect password. Redirecting to ../pages/user.php");
         }

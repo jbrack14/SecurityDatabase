@@ -3,10 +3,7 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
-    if(empty($_SESSION['profile_page_set_password']))
-    {
-    	$_SESSION['profile_page_set_password'] = 'true';
-    }
+
 
     $query = "
         SELECT
@@ -84,7 +81,8 @@
         </nav>
 
         <div id="page-wrapper">
-          <?php if($_SESSION['profile_page_set_password'] == 'false') { $_SESSION['profile_page_set_password'] = true; echo
+          <?php if(isset($_SESSION['profile_page_set_password']) && !$_SESSION['profile_page_set_password']) {
+            echo
             '<div class="alert alert-danger alert-dismissable">
               <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               <strong>Error!</strong> The current password you enetered was incorrect. Please try again.
@@ -97,9 +95,6 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
-            
-            <hr>
-            
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
@@ -113,7 +108,7 @@
                                 <div class="form-group">
                                   <label class="col-lg-2 control-label">First name:</label>
                                   <div class="col-lg-8">
-                                    <input class="form-control" name="first" id="first" type="text" value="<?php echo $profile['First_Name'] ?>" disabled>
+                                    <input class="form-control" name="first" id="first"type="text" value="<?php echo $profile['First_Name'] ?>" disabled>
                                   </div>
                                 </div>
 
@@ -205,8 +200,9 @@
                             </form>
                           </div>
                     </div>
+
+                    </div>
                     <!-- /.panel -->
-                    
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -237,7 +233,7 @@
 
 </html>
 <?php
-if(!empty($_SESSION['profile_page_set_password']))
+if(isset($_SESSION['profile_page_set_password']))
 {
 	unset($_SESSION['profile_page_set_password']);
 }

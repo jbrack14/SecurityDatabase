@@ -167,7 +167,7 @@
                                                 <!-- Form actions -->
                                                 <div class="form-group">
                                                     <div class="col-md-12 text-right">
-                                                        <a href="login.html" class="btn btn-primary btn-lg">
+                                                        <a href="login_page.php" class="btn btn-primary btn-lg">
                                                             <i class="fa fa-arrow-left"></i>
                                                         </a>
                                                         <button type="submit" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#success-alert">Submit</button>
