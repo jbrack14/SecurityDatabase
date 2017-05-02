@@ -3,6 +3,11 @@
     require_once("../basicFunctions.php");
 	doLogInCheck();
 
+    if(empty($_SESSION['profile_page_set_password']))
+    {
+    	$_SESSION['profile_page_set_password'] = 'true';
+    }
+
     $query = "
         SELECT
             *
@@ -79,6 +84,12 @@
         </nav>
 
         <div id="page-wrapper">
+          <?php if($_SESSION['profile_page_set_password'] == 'false') { $_SESSION['profile_page_set_password'] = true; echo
+            '<div class="alert alert-danger alert-dismissable">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <strong>Error!</strong> The current password you enetered was incorrect. Please try again.
+            </div>';
+          }?>
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">User Profile</h1>
@@ -225,3 +236,9 @@
 </body>
 
 </html>
+<?php
+if(!empty($_SESSION['profile_page_set_password']))
+{
+	unset($_SESSION['profile_page_set_password']);
+}
+?>
