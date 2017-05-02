@@ -86,12 +86,12 @@
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 
-<?php 
+<?php
 	$isLoadingNavBar = true;
-	require("navBar.php"); 
+	require("navBar.php");
 	$isLoadingNavBar = false;
 ?>
-            
+
         </nav>
 
         <div id="page-wrapper">
@@ -125,16 +125,12 @@
 								  	<form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
                                     	<input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">Last Name: </label>
-                                            <div class="col-md-9">
+                                            <label for="last" class="control-label">Last Name: </label>
                                             	<input class="form-control" name="last" id="last" type="text" value="<?php echo $row['Last_Name']; ?>" required>
-                                            </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-md-3 control-label">First Name: </label>
-                                            <div class="col-md-9">
+                                            <label for="first" class="control-label">First Name: </label>
                                             	<input class="form-control" name="first" id="first" type="text" value="<?php echo $row['First_Name']; ?>" required>
-                                            </div>
                                         </div>
                                         <button type="submit" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i>Update</button>
                                     </form>
@@ -168,7 +164,7 @@
                                     </div>
                                     </form>
                                   </td>
-                                  
+
                                 </tr>
 
                                 <?php } ?>
