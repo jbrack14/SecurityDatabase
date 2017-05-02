@@ -2,6 +2,9 @@
     require_once("../config.php");
     require_once("../basicFunctions.php");
 	doLogInCheck();
+	//$isSuperOrSysAdmin = isSuperUserOrSysAdmin($_SESSION['User_UUID']);
+	$isSysAdminUser = isSysAdmin($_SESSION['User_UUID']);
+	$isEditableUser = $isSysAdminUser;
 
     //Get Buildings
     $query = "
@@ -94,7 +97,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Cameras</h4><b>
+                            <h4><b>Cameras</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -136,7 +139,9 @@
                                     catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
                                     echo implode(', ', $spot->fetch())?>
                                   </td>
-                                  <td class="col-md-2"><form action="../php/update_camera.php" method="post" role="form" data-toggle="validator">
+                                  <td class="col-md-2">
+                                  <?php if($isEditableUser){ ?>
+                                  <form action="../php/update_camera.php" method="post" role="form" data-toggle="validator">
                                     <b>Status:</b>
                                     <select style="font-size: 12px;" class="form-control" id="status" name="status" <?php
                                     $query = "
@@ -167,6 +172,9 @@
                                       <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                   </form>
+                                  <?php } else { ?>
+                                  <?php echo $row['Status']; ?>
+                                  <?php } ?>
                                   </td>
                                 </tr>
                                 <?php } ?>
@@ -174,6 +182,8 @@
                           </table>
                     </div>
 
+<?php if($isEditableUser){ ?>
+				<hr>
                     <div class="panel panel-info">
                         <div class="panel-success">
                           <div class="panel-heading">
@@ -227,9 +237,13 @@
                             </div>
                           </div>
                         </form>
-                    <hr>
-                  </div>
-                    <!-- /.panel -->
+                    
+                  		</div>
+                    	<!-- /.panel -->
+                    </div>
+                   	<!-- /.panel -->
+<?php } ?>
+
                 </div>
                 <!-- /.col-lg-12 -->
             </div>

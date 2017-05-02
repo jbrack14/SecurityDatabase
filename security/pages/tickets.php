@@ -2,6 +2,7 @@
     require_once("../config.php");
     require_once("../basicFunctions.php");
 	doLogInCheck();
+	$isSuperOrSysAdmin = isSuperUserOrSysAdmin($_SESSION['User_UUID']);
 
     //Get Unresolved Tickets
     $query = "
@@ -260,8 +261,7 @@
                                     <th>Time Started</th>
                                     <th>Time Finished</th>
                                     <th>Related Videos</th>
-                                    <th class="col-md-4">Result</th>
-                                    <th></th>
+                                    <?php if($isSuperOrSysAdmin){ ?><th class="col-md-4">Result</th><?php } ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -282,6 +282,8 @@
                                     </div>
                                 </form>
                                   </td>
+                                  
+                                  <?php if($isSuperOrSysAdmin){ ?>
                                   <td class="col-md-2">
                                       <form action="../php/resolve_ticket.php" method="post" role="form" data-toggle="validator">
                                         <textarea class="form-control" rows="4" name="result" id="result" required></textarea>
@@ -289,6 +291,7 @@
                                         <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-primary" value="Resolve">
                                       </form>
                                   </td>
+								  <?php } ?>
 
                                 </tr>
                                 <?php } ?>
