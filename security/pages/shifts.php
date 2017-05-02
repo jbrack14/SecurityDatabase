@@ -1,7 +1,7 @@
 <?php
     require_once("../config.php");
     require_once("../basicFunctions.php");
-	doLogInCheck();
+	doSuperUserLogInCheck();
 
 	$thisSSN = getUserSSN();
     //Get Supervisees

@@ -2,6 +2,9 @@
     require_once("../config.php");
     require_once("../basicFunctions.php");
 	doLogInCheck();
+	//$isSuperOrSysAdmin = isSuperUserOrSysAdmin($_SESSION['User_UUID']);
+	$isSysAdminUser = isSysAdmin($_SESSION['User_UUID']);
+	$isEditableUser = $isSysAdminUser;
 
     //Get Buildings
     $query = "
@@ -81,7 +84,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Buildings</h4><b>
+                            <h4><b>Buildings</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -100,7 +103,9 @@
                                   <td><?php echo $row['Street_Num']; ?></td>
                                   <td><?php echo $row['Street_Name']; ?></td>
                                   <td><?php echo $row['Zip_Code']; ?></td>
-                                  <td><form action="../php/delete_building.php" method="post" role="form" data-toggle="validator">
+                                  <td>
+                                  <?php if($isEditableUser){ ?>
+                                  <form action="../php/delete_building.php" method="post" role="form" data-toggle="validator">
                                     <b>Status:</b>
                                     <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                         <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
@@ -110,13 +115,18 @@
                                       <input type="hidden" value="<?php echo $row['Name']; ?>" name="delete" id="delete">
                                       <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
-                                  </form></td>
+                                  </form>
+                                  <?php } else { ?>
+                                  <?php echo $row['Status']; ?>
+                                  <?php } ?>
+                                  </td>
                                 </tr>
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
-
+<?php if($isEditableUser){ ?>
+					<hr>
                     <div class="panel panel-info">
                         <div class="panel-success">
                           <div class="panel-heading">
@@ -155,11 +165,13 @@
                             </div>
                           </div>
                         </form>
-                    <hr>
-                  </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-12 -->
+                  		</div>
+                    	<!-- /.panel -->
+                	</div>
+                	<!-- /.panel panel-info -->
+<?php } ?>
+				</div>
+            	<!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
         </div>

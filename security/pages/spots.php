@@ -2,6 +2,9 @@
     require_once("../config.php");
     require_once("../basicFunctions.php");
 	doLogInCheck();
+	//$isSuperOrSysAdmin = isSuperUserOrSysAdmin($_SESSION['User_UUID']);
+	$isSysAdminUser = isSysAdmin($_SESSION['User_UUID']);
+	$isEditableUser = $isSysAdminUser;
 
     //Get Indoor Spots
     $query = "
@@ -110,7 +113,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Indoor Spots</h4><b>
+                            <h4><b>Indoor Spots</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -176,6 +179,7 @@
                                       ?> : <?php echo implode(', ', $officer->fetch())?>
                                     </li>
                                   <?php } ?>
+                                  </ul>
                                   </td>
                                   <td><?php
                                   $query = "
@@ -204,7 +208,9 @@
                                   <?php } ?>
                                   </ul>
                                   </td>
-                                  <td class="col-md-2"><form action="../php/update_spot.php" method="post" role="form" data-toggle="validator">
+                                  <td class="col-md-2">
+                                  <?php if($isEditableUser){ ?>
+                                  <form action="../php/update_spot.php" method="post" role="form" data-toggle="validator">
                                     <b>Status:</b>
                                     <select style="font-size: 12px;" class="form-control" id="status" name="status" <?php
                                     $query = "
@@ -235,16 +241,21 @@
                                       <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                   </form>
+                                  <?php } else { ?>
+                                  <?php echo $row['Status']; ?>
+                                  <?php } ?>
                                   </td>
                                 </tr>
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
+                    
+				<hr>
 
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Outdoor Spots</h4><b>
+                            <h4><b>Outdoor Spots</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -339,7 +350,9 @@
                                   <?php } ?>
                                   </ul>
                                   </td>
-                                  <td class="col-md-2"><form action="../php/update_outdoor_spot.php" method="post" role="form" data-toggle="validator">
+                                  <td class="col-md-2">
+                                  <?php if($isEditableUser){ ?>
+                                  <form action="../php/update_outdoor_spot.php" method="post" role="form" data-toggle="validator">
                                     <b>Status:</b>
                                     <select style="font-size: 12px;" class="form-control" id="status" name="status">
                                         <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
@@ -350,71 +363,78 @@
                                       <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i></button>
                                     </div>
                                   </form>
+                                  <?php } else { ?>
+                                  <?php echo $row['Status']; ?>
+                                  <?php } ?>
                                   </td>
                                 </tr>
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
-
-                    <div class="panel panel-info">
-                        <div class="panel-success">
-                          <div class="panel-heading">
-                              <h4><b>Create New <b>Indoor</b> Spot</b></h4>
-                          </div>
-                          <br>
-                        <form class="form-horizontal" action="../php/newIndoorSpot.php" method="post" role="form">
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Building:</label>
-                            <div class="col-lg-8">
-                              <label for="name">Select a Building:</label>
-                                <select class="form-control" id="name" name="name">
-                                  <?php while($row = $buildings->fetch()) { ?>
-                                    <option value="<?php echo $row['Name'] ?>" <?php if($row['Status'] == "INACTIVE"){ echo 'select disabled';}?>><?php echo $row['Name'] ?></option>
-                                  <?php } ?>
-                                </select>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Floor Number:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="floor" id="floor" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Room Number:</label>
-                            <div class="col-lg-8">
-                              <input class="form-control" name="room" id="room" required>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Hallway / Room:</label>
-                            <div class="col-lg-8">
-                              <label><input name="is" id="is" type="checkbox" value="">This spot is inside a room.</label>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-lg-2 control-label">Coverage Description:</label>
-                            <div class="col-lg-8">
-                              <textarea class="form-control" rows="4" name="coverage" id="coverage"></textarea>
-                            </div>
-                          </div>
-                          <div class="form-group">
-                            <label class="col-md-2 control-label"></label>
-                            <div class="col-md-8">
-                              <input type="submit" class="btn btn-primary" value="Create Spot">
-                            </div>
-                          </div>
-                        </form>
-                    <hr>
-                  </div>
+                    
+<?php if($isEditableUser){ ?>
+				<hr>
+                
+                <div class="panel panel-info">
+                    <div class="panel-success">
+                      <div class="panel-heading">
+                          <h4><b>Create New Indoor Spot</b></h4>
+                      </div>
+                      <br>
+                    <form class="form-horizontal" action="../php/newIndoorSpot.php" method="post" role="form">
+                      <div class="form-group">
+                        <label class="col-lg-2 control-label">Building:</label>
+                        <div class="col-lg-8">
+                          <label for="name">Select a Building:</label>
+                            <select class="form-control" id="name" name="name">
+                              <?php while($row = $buildings->fetch()) { ?>
+                                <option value="<?php echo $row['Name'] ?>" <?php if($row['Status'] == "INACTIVE"){ echo 'select disabled';}?>><?php echo $row['Name'] ?></option>
+                              <?php } ?>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-lg-2 control-label">Floor Number:</label>
+                        <div class="col-lg-8">
+                          <input class="form-control" name="floor" id="floor" required>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-lg-2 control-label">Room Number:</label>
+                        <div class="col-lg-8">
+                          <input class="form-control" name="room" id="room" required>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-lg-2 control-label">Hallway / Room:</label>
+                        <div class="col-lg-8">
+                          <label><input name="is" id="is" type="checkbox" value="">This spot is inside a room.</label>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-lg-2 control-label">Coverage Description:</label>
+                        <div class="col-lg-8">
+                          <textarea class="form-control" rows="4" name="coverage" id="coverage"></textarea>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-md-2 control-label"></label>
+                        <div class="col-md-8">
+                          <input type="submit" class="btn btn-primary" value="Create Spot">
+                        </div>
+                      </div>
+                    </form>
+                    </div>
                     <!-- /.panel -->
                 </div>
+                    
+				<hr>
 
                 <div class="panel panel-info">
                     <div class="panel-success">
                       <div class="panel-heading">
-                          <h4><b>Create New <b>Outdoor</b> Spot</b></h4>
+                          <h4><b>Create New Outdoor Spot</b></h4>
                       </div>
                       <br>
                     <form class="form-horizontal" action="../php/newOutdoorSpot.php" method="post" role="form">
@@ -443,9 +463,12 @@
                         </div>
                       </div>
                     </form>
-                <hr>
-              </div>
+              		</div>
+                	<!-- /.panel -->
+                </div>
                 <!-- /.panel -->
+<?php } ?>
+                
             </div>
                 <!-- /.col-lg-12 -->
             </div>

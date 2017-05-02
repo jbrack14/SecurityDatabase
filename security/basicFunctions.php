@@ -162,6 +162,31 @@
 		return $result;
 
 	}
+	
+	function isSuperUserOrSysAdmin($UserUUID)
+	{
+		return isSysAdmin($UserUUID) || isSuperUser($UserUUID);
+	}
+	
+	function doSysAdminLogInCheck()
+	{
+		doLogInCheck();
+		if(!isSysAdmin($_SESSION['User_UUID']))
+		{
+			header("Location: ../pages/home.php");
+        	die("Your don't have the privilege to view this page! Redirecting to ../pages/home.php");
+		}
+	}
+	
+	function doSuperUserLogInCheck()
+	{
+		doLogInCheck();
+		if(!isSuperUser($_SESSION['User_UUID']))
+		{
+			header("Location: ../pages/home.php");
+        	die("Your don't have the privilege to view this page! Redirecting to ../pages/home.php");
+		}
+	}
 
   function formatDurationUS($microseconds ) {
     return formatDurationS(($microseconds/1000000));
