@@ -95,6 +95,9 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
+            
+            <hr>
+            
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
@@ -200,9 +203,8 @@
                             </form>
                           </div>
                     </div>
-
-                    </div>
                     <!-- /.panel -->
+                    
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
