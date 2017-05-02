@@ -141,7 +141,7 @@
     <link type="text/css" href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link type="text/css" href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link type="text/css" href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -193,7 +193,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h4><b>Supervisees</h4><b>
+                            <h4><b>Supervisees</b></h4>
                         </div>
                         <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
                             <thead>
@@ -236,10 +236,12 @@
                                   echo $num_supervisee_shifts; ?></td>
                                 </tr>
                                 <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
-
+                    
+                    <hr>
+                    
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <h4><b>All Shifts</b></h4>
@@ -333,10 +335,12 @@
                                   </form>
                                 </td>
                               <?php } ?>
-                            <tbody>
+                            </tbody>
                           </table>
                     </div>
-
+                    
+                    <hr>
+                    
                     <div class="panel panel-info">
                         <div class="panel-success">
                           <div class="panel-heading">
@@ -411,9 +415,11 @@
                             </div>
                           </div>
                         </form>
-                    <hr>
-                  </div>
+                  		</div>
+                    	<!-- /.panel -->
+                  	</div>
                     <!-- /.panel -->
+                    
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -423,14 +429,8 @@
 
     </div>
     <!-- /#wrapper -->
-    	<div class="container">
-            <div class="row">
-                    <div class="col-sm-6">
 
-                    </div>
 
-                </div>
-            </div>
 </body>
 
 </html>
