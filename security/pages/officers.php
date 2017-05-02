@@ -142,8 +142,8 @@
                                     <form action="../php/updateOfficer.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
                                         <input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
-                                        <div>
-                                        	<b>Supervisor:</b>
+                                        <div class="form-group">
+                                            <label for="super" class="control-label">Supervisor: </label>
                                             <select style="font-size: 12px;" class="form-control" id="super" name="super">
                                                 <?php
                                                 foreach($officerList as $row3) { ?>
@@ -153,13 +153,14 @@
                                             </select>
                                         </div>
 
-                                        <b>Status:</b>
-                                        <select style="font-size: 12px;" class="form-control" id="status" name="status">
-                                            <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
-                                            <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
-                                            <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
-                                        </select>
-
+                                        <div class="form-group">
+                                            <label for="status" class="control-label">Status: </label>
+                                            <select style="font-size: 12px;" class="form-control" id="status" name="status">
+                                                <option value="ACTIVE" <?php if($row['Status']=="ACTIVE"){echo "selected";} ?> >ACTIVE</option>
+                                                <option value="INACTIVE" <?php if($row['Status']=="INACTIVE"){echo "selected";} ?> >INACTIVE</option>
+                                                <option value="RETIRED" <?php if($row['Status']=="RETIRED"){echo "selected";} ?> >RETIRED</option>
+                                            </select>
+                                        </div>
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i>Update</button>
                                     </div>
                                     </form>
