@@ -258,8 +258,8 @@
                                     <th>Email</th>
                                     <th>Phone</th>
                                     <th>Description</th>
-                                    <th>Time Started</th>
-                                    <th>Time Finished</th>
+                                    <th>Spots</th>
+                                    <th>Time</th>
                                     <th>Related Videos</th>
                                     <?php if($isSuperOrSysAdmin){ ?><th class="col-md-4">Result</th><?php } ?>
                                 </tr>
@@ -273,8 +273,30 @@
                                   <td class="col-md-1"><?php echo $row['Email']; ?></td>
                                   <td class="col-md-1">(<?php echo substr($row['Phone_Num'], 0, 3); ?>) <?php echo substr($row['Phone_Num'], 3, 3); ?> - <?php echo substr($row['Phone_Num'], 6, 4); ?></td>
                                   <td class="col-md-2"><?php echo $row['Description'];?></td>
-                                  <td class="col-md-1"><?php echo $row['Start_Time'];?></td>
-                                  <td class="col-md-1"><?php echo $row['End_Time'];?></td>
+                                  <td class="col-md-1">
+                                  <ul><?php $query = "
+                                        SELECT
+                                          Coverage_Description
+                                        FROM Spot AS sp NATURAL JOIN Ticket_Spots AS sa
+                                        WHERE sa.Ticket_UUID = :ticket_uuid
+                                    ";
+
+                                    $query_params = array(
+                                      ':ticket_uuid' => $row['Ticket_UUID']
+                                    );
+
+                                    try{
+                                        $spots = $db->prepare($query);
+                                        $result = $spots->execute($query_params);
+                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    while($row2 = $spots->fetch()) { ?>
+                                      <li><?php echo $row2['Coverage_Description']; ?></li>
+                                    <?php } ?>
+                                  </ul>
+                                  </td>
+                                  <td class="col-md-1"><?php echo "<b>Start: </b>" . $row['Start_Time'];?><br><?php echo "<b>End: </b>" . $row['End_Time'];?></td>
                                   <td class="col-md-1"><?php $relatedVideoCountNum = GetRelatedVideosCount($row['Ticket_UUID'], $row['Start_Time'], $row['End_Time']) . " Video(s)."; echo $relatedVideoCountNum;?>
                                 <form action="tickets.php" method="post" role="form" data-toggle="validator">
                                     <div class="form-group">
@@ -318,8 +340,8 @@
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Description</th>
-                                        <th>Time Started</th>
-                                        <th>Time Finished</th>
+                                        <th>Spots</th>
+                                        <th>Time</th>
                                         <th>Result</th>
                                     </tr>
                                 </thead>
@@ -331,8 +353,30 @@
                                       <td><?php echo $row['Email']; ?></td>
                                       <td><?php echo $row['Phone_Num'];?></td>
                                       <td><?php echo $row['Description'];?></td>
-                                      <td><?php echo $row['Start_Time'];?></td>
-                                      <td><?php echo $row['End_Time'];?></td>
+                                      <td>
+                                      <ul><?php $query = "
+                                        SELECT
+                                          Coverage_Description
+                                        FROM Spot AS sp NATURAL JOIN Ticket_Spots AS sa
+                                        WHERE sa.Ticket_UUID = :ticket_uuid
+                                    ";
+
+                                    $query_params = array(
+                                      ':ticket_uuid' => $row['Ticket_UUID']
+                                    );
+
+                                    try{
+                                        $spots = $db->prepare($query);
+                                        $result = $spots->execute($query_params);
+                                        $spots->setFetchMode(PDO::FETCH_ASSOC);
+                                    }
+                                    catch(PDOException $ex){ die("Failed to run query: " . $ex->getMessage()); }
+                                    while($row2 = $spots->fetch()) { ?>
+                                      <li><?php echo $row2['Coverage_Description']; ?></li>
+                                    <?php } ?>
+                                  </ul>
+                                      </td>
+                                      <td><?php echo "<b>Start: </b>" . $row['Start_Time'];?><br><?php echo "<b>End: </b>" . $row['End_Time'];?></td>
                                       <td><?php echo $row['Result'];?></td>
                                     </tr>
                                     <?php } ?>
