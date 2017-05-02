@@ -113,14 +113,14 @@
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Phone number:</label>
                                 <div class="col-lg-8">
-                                  <input class="form-control" name="phone" id="phone" type="text" value="<?php echo $profile['Phone_Number'] ?>">
+                                  <input class="form-control" name="phone" id="phone" type="tel" value="<?php echo $profile['Phone_Number'] ?>">
                                 </div>
                               </div>
 
                               <div class="form-group">
                                 <label class="col-lg-2 control-label">Email:</label>
                                 <div class="col-lg-8">
-                                  <input class="form-control" name="email" id="email" type="text" value="<?php echo $profile['Email'] ?>">
+                                  <input class="form-control" name="email" id="email" type="email" value="<?php echo $profile['Email'] ?>">
                                 </div>
                               </div>
 

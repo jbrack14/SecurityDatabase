@@ -271,7 +271,7 @@
                                   <td class="col-md-1"><?php echo $row['Time_Created']; ?></td>
                                   <td class="col-md-1"><?php echo $row['Name']; ?></td>
                                   <td class="col-md-1"><?php echo $row['Email']; ?></td>
-                                  <td class="col-md-1"><?php echo $row['Phone_Num']; ?></td>
+                                  <td class="col-md-1">(<?php echo substr($row['Phone_Num'], 0, 3); ?>) <?php echo substr($row['Phone_Num'], 3, 3); ?> - <?php echo substr($row['Phone_Num'], 6, 4); ?></td>
                                   <td class="col-md-2"><?php echo $row['Description'];?></td>
                                   <td class="col-md-1"><?php echo $row['Start_Time'];?></td>
                                   <td class="col-md-1"><?php echo $row['End_Time'];?></td>
