@@ -88,23 +88,23 @@
                                                         <input id="ticket_name" name="ticket_name" type="text" placeholder="Your name" class="form-control" required>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Email input-->
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label" for="ticket_email">Your E-mail</label>
                                                     <div class="col-md-9">
-                                                        <input id="ticket_email" name="ticket_email" type="text" placeholder="Your email" class="form-control" required>
+                                                        <input id="ticket_email" name="ticket_email" type="email" placeholder="Your email" class="form-control" required>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Phone input-->
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label" for="ticket_phone">Your Phone Number</label>
                                                     <div class="col-md-9">
-                                                        <input id="ticket_phone" name="ticket_phone" type="text" placeholder="Your phone number" class="form-control" required>
+                                                        <input id="ticket_phone" name="ticket_phone" type="tel" placeholder="Your phone number" class="form-control" required>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label">Spots:</label>
                                                     <div class="col-md-9">
@@ -116,7 +116,7 @@
                                                                     *
                                                                 FROM Spot
                                                             ";
-                                                            
+
                                                             try{
                                                                 $spots = $db->prepare($query);
                                                                 $result = $spots->execute();
@@ -129,7 +129,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Start Time -->
                                                 <div class="form-group">
                                                     <label class="col-lg-3 control-label">Start Time:</label>
@@ -142,7 +142,7 @@
                                                         </script>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- End Time -->
                                                 <div class="form-group">
                                                     <label class="col-lg-3 control-label">End Time:</label>
@@ -155,7 +155,7 @@
                                                         </script>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Message body -->
                                                 <div class="form-group">
                                                     <label class="col-md-3 control-label" for="ticket_message">Describe your scurity request</label>
@@ -163,7 +163,7 @@
                                                         <textarea class="form-control" id="ticket_message" name="ticket_message" placeholder="Please enter your message here..." rows="5" required></textarea>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <!-- Form actions -->
                                                 <div class="form-group">
                                                     <div class="col-md-12 text-right">
@@ -173,11 +173,11 @@
                                                         <button type="submit" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#success-alert">Submit</button>
                                                     </div>
                                                 </div>
-                                                
+
                                                 <br>
                                                 <br>
                                                 <br>
-                                                
+
                                             </fieldset>
                                             </form>
                                         </div>
