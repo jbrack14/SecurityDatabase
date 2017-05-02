@@ -11,11 +11,11 @@
         WHERE Super_SSN = :ssn
         ORDER BY Last_Name
     ";
-	
+
 	$query_params = array(
         ':ssn' => getUserSSN()
     );
-	
+
     try{
         $superve = $db->prepare($query);
         $result = $superve->execute($query_params);
@@ -73,12 +73,12 @@
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 
-<?php 
+<?php
 	$isLoadingNavBar = true;
-	require("navBar.php"); 
+	require("navBar.php");
 	$isLoadingNavBar = false;
 ?>
-            
+
         </nav>
 
         <div id="page-wrapper">
@@ -116,16 +116,12 @@
                                     <form action="../php/updateSupervisee.php" method="post" role="form" data-toggle="validator">
                                     	<input type="hidden" value="<?php echo $row['SSN']; ?>" name="off_ssn" id="off_ssn">
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">Last Name: </label>
-                                            <div class="col-lg-10">
-                                            	<input class="form-control" name="last" id="last" type="text" placeholder="Last Name" required>
-                                            </div>
+                                            <label for="last" class="control-label">Last Name: </label>
+                                              <input class="form-control" name="last" id="last" type="text" placeholder="<?php echo $row['Last_Name']; ?>" required>
                                         </div>
                                         <div class="form-group">
-                                            <label class="col-lg-2 control-label">First Name: </label>
-                                            <div class="col-lg-10">
-                                            	<input class="form-control" name="first" id="first" type="text" placeholder="First Name" required>
-                                            </div>
+                                            <label for="first" class="control-label">First Name: </label>
+                                            	<input class="form-control" name="first" id="first" type="text" placeholder="<?php echo $row['First_Name']; ?>" required>
                                         </div>
                                         <button type="submit" tabindex="4" class="form-control btn btn-xs btn-success"><i class="fa fa-check fa-fw"></i>Update</button>
                                     </form>
@@ -138,7 +134,7 @@
                     </div>
 
                     <hr>
-                    
+
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
