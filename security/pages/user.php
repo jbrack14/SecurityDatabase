@@ -96,8 +96,6 @@
             </div>
             <!-- /.row -->
             
-            <hr>
-            
             <div class="row">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
@@ -111,7 +109,7 @@
                                 <div class="form-group">
                                   <label class="col-lg-2 control-label">First name:</label>
                                   <div class="col-lg-8">
-                                    <input class="form-control" name="first" id="first"type="text" value="<?php echo $profile['First_Name'] ?>" disabled>
+                                    <input class="form-control" name="first" id="first" type="text" value="<?php echo $profile['First_Name'] ?>" disabled>
                                   </div>
                                 </div>
 
@@ -160,6 +158,8 @@
                             </form>
                           </div>
                     </div>
+            
+            		<hr>
 
 
                     <div class="panel panel-default">
