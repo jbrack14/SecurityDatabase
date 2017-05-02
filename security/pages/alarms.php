@@ -213,9 +213,9 @@
                             <thead>
                                 <tr class="danger">
                                     <th>Time</th>
+                                    <th>Duration</th>
                                     <th>Spot Description</th>
                                     <th>Related Videos</th>
-                                    <th> </th>
                                     <th> </th>
                                 </tr>
                             </thead>
