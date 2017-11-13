@@ -1,14 +1,5 @@
 # SecuirtyDatabase
-Security System Database
+Security System Database, a final project for Database Design and Theory. It manages the security events, security resources and surveillance videos for a facilities security department. A [Java API](https://github.com/zhenghaven/SecurityDatabaseJavaAPI) is used to upload videos and raise alarms.
 
 CS440 WVU - Jordan Brack and Haofan Zheng
 
-------------------------------------------------------------------------
-Database Info:
-
-	hostname: security-db-mysql.cy89i85gvki0.us-west-2.rds.amazonaws.com
-	port: 3306
-	user: jbhz
-	password: zxczxczxc
-
-------------------------------------------------------------------------
